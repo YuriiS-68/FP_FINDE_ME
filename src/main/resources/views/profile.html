@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Find me</title>
+</head>
+<body>
+
+    <!--<div th:replace="fragments/header :: header"></div>-->
+
+    <div class="left">
+        <div class="starter-template">
+            <h1>Photo</h1>
+        </div>
+
+        <div>
+            <button class="btn">Send message</button>
+        </div>
+    </div>
+
+    <div class="right">
+        Styled text here
+    </div>
+    <div class="right">
+        <!--/*@thymesVar id="user" type="com.findme.models.User"*/-->
+        <p th:text="${user.getFirstName()}"></p>
+        <p th:text="${user.getCity()}"></p>
+    </div>
+
+<!-- /.container -->
+<!---->
+<!--<div th:replace="fragments/footer :: footer" />-->
+
+</body>
+
+<style>
+    .left{
+        float: left;
+        width: 200px;
+        height: 300px;
+        border-style: solid;
+    }
+
+    .right{
+        margin-left: 300px;
+    }
+
+    .btn{
+        margin-top: 230px;
+    }
+</style>
+
+</html>

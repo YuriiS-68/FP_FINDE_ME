@@ -14,7 +14,7 @@ import java.util.StringJoiner;
 
 @Entity
 @Table(name = "USER_FM")
-class User extends IdEntity{
+public class User extends IdEntity{
     private Long id;
     private String firstName;
     private String lastName;

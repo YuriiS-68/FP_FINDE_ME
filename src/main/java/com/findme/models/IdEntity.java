@@ -1,6 +1,6 @@
 package com.findme.models;
 
-class IdEntity {
+public class IdEntity {
     private Long id;
 
     public Long getId() {

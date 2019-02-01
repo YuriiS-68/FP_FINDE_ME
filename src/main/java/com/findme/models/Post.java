@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 
 @Entity
 @Table(name = "POST")
-class Post extends IdEntity{
+public class Post extends IdEntity{
     private Long id;
     private String message;
     private Date datePosted;
@@ -87,7 +87,7 @@ class Post extends IdEntity{
                 .add("id=" + id)
                 .add("message='" + message + "'")
                 .add("datePosted=" + datePosted)
-                .add("userPosted=" + userPosted)
+                .add("userPosted=" + userPosted.getId())
                 .toString();
     }
 

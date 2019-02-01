@@ -1,5 +1,11 @@
 package com.findme.config;
 
+import com.findme.dao.PostDAO;
+import com.findme.dao.UserDAO;
+import com.findme.service.PostService;
+import com.findme.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,22 +16,83 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass = true)
-@ComponentScan("com.findme")
-public class AppConfig {
+@EnableWebMvc
+@ComponentScan(basePackages = {"com.findme"})
+public class AppConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Bean
+    public UserDAO userDAO(){
+        return new UserDAO();
+    }
+
+    @Bean
+    public UserService userService(){
+        UserService userService = new UserService(userDAO());
+        userService.setUserDAO(userDAO());
+        return userService;
+    }
+
+    @Bean
+    public PostDAO postDAO(){
+        return new PostDAO();
+    }
+
+    @Bean
+    public PostService postService(){
+        PostService postService = new PostService(postDAO());
+        postService.setPostDAO(postDAO());
+        return postService;
+    }
+
+    @Bean
+    public SpringResourceTemplateResolver templateResolver(){
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setApplicationContext(applicationContext);
+        templateResolver.setPrefix("classpath:/views/");
+        templateResolver.setSuffix(".html");
+        return templateResolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine templateEngine(){
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.setEnableSpringELCompiler(true);
+        return templateEngine;
+    }
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry){
+        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setTemplateEngine(templateEngine());
+        resolver.setCharacterEncoding("UTF-8");
+        registry.viewResolver(resolver);
+    }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("dz_spring7");
+        em.setPackagesToScan("come.findme/models");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
-        //em.setJpaProperties(additionalProperties());
+        em.setJpaProperties(additionalProperties());
 
         return em;
     }
@@ -48,13 +115,21 @@ public class AppConfig {
         return transactionManager;
     }
 
-    /*private Properties additionalProperties(){
+    private Properties additionalProperties(){
         Properties properties = new Properties();
-        //properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
         properties.setProperty("sessionFactory", "sessionFactory");
         properties.setProperty("show_sql", "true");
 
         return properties;
-    }*/
-
+    }
 }
+/*@Autowired
+    @Bean(name = "sessionFactory")
+    public SessionFactory getSessionFactory(DataSource dataSource){
+        LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
+        sessionBuilder.addAnnotatedClasses(User.class);
+        sessionBuilder.addAnnotatedClasses(Message.class);
+        sessionBuilder.addAnnotatedClasses(Post.class);
+        return sessionBuilder.buildSessionFactory();
+    }*/
