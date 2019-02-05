@@ -32,8 +32,12 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"com.findme"})
 public class AppConfig implements WebMvcConfigurer {
 
-    @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    public AppConfig(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @Bean
     public UserDAO userDAO(){
@@ -88,11 +92,11 @@ public class AppConfig implements WebMvcConfigurer {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("come.findme/models");
+        em.setPackagesToScan("com.findme/models");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(additionalProperties());
+        //em.setJpaProperties(additionalProperties());
 
         return em;
     }
@@ -115,21 +119,12 @@ public class AppConfig implements WebMvcConfigurer {
         return transactionManager;
     }
 
-    private Properties additionalProperties(){
+    /*private Properties additionalProperties(){
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
         properties.setProperty("sessionFactory", "sessionFactory");
         properties.setProperty("show_sql", "true");
 
         return properties;
-    }
-}
-/*@Autowired
-    @Bean(name = "sessionFactory")
-    public SessionFactory getSessionFactory(DataSource dataSource){
-        LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
-        sessionBuilder.addAnnotatedClasses(User.class);
-        sessionBuilder.addAnnotatedClasses(Message.class);
-        sessionBuilder.addAnnotatedClasses(Post.class);
-        return sessionBuilder.buildSessionFactory();
     }*/
+}

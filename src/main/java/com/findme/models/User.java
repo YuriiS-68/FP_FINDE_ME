@@ -115,19 +115,19 @@ public class User extends IdEntity{
     }
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Message.class)
+    @OneToMany(mappedBy = "userFrom", fetch = FetchType.LAZY, targetEntity = Message.class)
     public List<Message> getMessageSent() {
         return messageSent;
     }
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Message.class)
+    @OneToMany(mappedBy = "userTo", fetch = FetchType.LAZY, targetEntity = Message.class)
     public List<Message> getMessageReceived() {
         return messageReceived;
     }
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, targetEntity = Post.class)
+    @OneToMany(mappedBy = "userPosted", fetch = FetchType.LAZY, targetEntity = Post.class)
     public List<Post> getPosts() {
         return posts;
     }
@@ -162,16 +162,13 @@ public class User extends IdEntity{
                 relationshipStatus == user.relationshipStatus &&
                 religion == user.religion &&
                 school.equals(user.school) &&
-                university.equals(user.university) &&
-                messageSent.equals(user.messageSent) &&
-                messageReceived.equals(user.messageReceived) &&
-                posts.equals(user.posts);
+                university.equals(user.university);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, phone, country, city, age, dateRegistered, dateLastActive,
-                relationshipStatus, religion, school, university, messageSent, messageReceived, posts);
+                relationshipStatus, religion, school, university);
     }
 
     @Override
@@ -190,9 +187,6 @@ public class User extends IdEntity{
                 .add("religion=" + religion)
                 .add("school='" + school + "'")
                 .add("university='" + university + "'")
-                .add("messageSent=" + messageSent)
-                .add("messageReceived=" + messageReceived)
-                .add("posts=" + posts)
                 .toString();
     }
 

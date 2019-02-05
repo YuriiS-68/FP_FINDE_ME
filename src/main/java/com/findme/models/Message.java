@@ -89,7 +89,7 @@ public class Message extends IdEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, dateSent, dateRead, userFrom, userTo);
+        return Objects.hash(id, text, dateSent, dateRead);
     }
 
     @Override
@@ -99,8 +99,8 @@ public class Message extends IdEntity {
                 .add("text='" + text + "'")
                 .add("dateSent=" + dateSent)
                 .add("dateRead=" + dateRead)
-                .add("userFrom=" + userFrom.getId())
-                .add("userTo=" + userTo.getId())
+                .add("userFrom=" + userFrom)
+                .add("userTo=" + userTo)
                 .toString();
     }
 

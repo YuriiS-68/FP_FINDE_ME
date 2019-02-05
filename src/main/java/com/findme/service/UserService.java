@@ -21,16 +21,22 @@ public class UserService {
             throw new BadRequestException("This User with ID - " + user.getId() + " can not save in DB.");
         }
         else {
-            userDAO.saveUser(user);
+            userDAO.save(user);
         }
         return user;
+    }
+
+    public void update(User user)throws BadRequestException{
+        if (user == null){
+            throw new BadRequestException("User is not exist");
+        }
+        userDAO.update(user);
     }
 
     public void delete(Long id)throws BadRequestException{
         if (id == null){
             throw new BadRequestException("The ID entered does not exist");
         }
-
         userDAO.delete(id);
     }
 

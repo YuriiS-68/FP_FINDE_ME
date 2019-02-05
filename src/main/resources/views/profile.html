@@ -23,7 +23,17 @@
     <div class="right">
         <!--/*@thymesVar id="user" type="com.findme.models.User"*/-->
         <p th:text="${user.getFirstName()}"></p>
+        <p th:text="${user.getLastName()}"></p>
+        <p th:text="${user.getPhone()}"></p>
+        <p th:text="${user.getCountry()}"></p>
         <p th:text="${user.getCity()}"></p>
+        <p th:text="${user.getAge()}"></p>
+        <p th:text="${user.getDateRegistered()}"></p>
+        <p th:text="${user.getDateLastActive()}"></p>
+        <p th:text="${user.getRelationshipStatus()}"></p>
+        <p th:text="${user.getReligion()}"></p>
+        <p th:text="${user.getSchool()}"></p>
+        <p th:text="${user.getUniversity()}"></p>
     </div>
 
 <!-- /.container -->

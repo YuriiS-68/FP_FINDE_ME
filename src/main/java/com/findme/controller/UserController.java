@@ -7,6 +7,7 @@ import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,20 +27,22 @@ public class UserController extends Utils<User> {
         this.userDAO = userDAO;
     }
 
-    @RequestMapping(path = "/user", method = RequestMethod.GET)
-    public String profile(Model model){
-        User user = new User();
-        user.setFirstName("Yurii");
-        user.setCity("Kiev");
-        model.addAttribute("user", user);
+    @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
+    public String profile(Model model, @PathVariable String userId){
+        if (userDAO.findById(Long.parseLong(userId)) == null){
+            return "exception1";
+        }
+        else {
+            User user = userDAO.findById(Long.parseLong(userId));
+            model.addAttribute("user", user);
+        }
         return "profile";
     }
 
-    @RequestMapping (method = RequestMethod.POST, value = "/save/user", produces = "text/plain")
+    @RequestMapping (method = RequestMethod.POST, value = "/saveUser", produces = "text/plain")
     public @ResponseBody
     String save(HttpServletRequest req) throws IOException, BadRequestException {
         User user = mappingObject(req);
-        System.out.println("User after mapping: " + user);
 
         try {
             userService.save(user);
@@ -49,6 +52,26 @@ public class UserController extends Utils<User> {
             throw e;
         }
         return "User saved success.";
+    }
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/updateUser", produces = "text/plain")
+    public @ResponseBody
+    String update(HttpServletRequest req)throws IOException, BadRequestException{
+        User user = mappingObject(req);
+        long inputId = Long.parseLong(req.getParameter("userId"));
+
+        try{
+            if (userDAO.findById(inputId) == null){
+                return "User with ID - " + inputId + " does not exist in the DB";
+            }
+            else {
+                userService.update(user);
+            }
+        }catch (BadRequestException e){
+            System.err.println(e.getMessage());
+            throw  e;
+        }
+        return "User update success";
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteUser", produces = "text/plain")

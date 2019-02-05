@@ -78,7 +78,7 @@ public class Post extends IdEntity{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, datePosted, userPosted);
+        return Objects.hash(id, message, datePosted);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Post extends IdEntity{
                 .add("id=" + id)
                 .add("message='" + message + "'")
                 .add("datePosted=" + datePosted)
-                .add("userPosted=" + userPosted.getId())
+                .add("userPosted=" + userPosted)
                 .toString();
     }
 

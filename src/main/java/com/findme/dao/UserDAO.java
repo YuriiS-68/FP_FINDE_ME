@@ -7,9 +7,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("userDAO")
 @Transactional
 public class UserDAO extends GeneralDAO<User> {
-
-    public User saveUser(User user){
-        getEntityManager().persist(user);
-        return user;
-    }
 }

@@ -22,9 +22,9 @@ public abstract class GeneralDAO<T extends IdEntity> implements GenericEntityDAO
         this.type = ((Class<T>) ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
 
-    public T save(T t){
-        entityManager.persist(t);
-        return t;
+    public T save(T entity){
+        entityManager.persist(entity);
+        return entity;
     }
 
     public void update(T t){
