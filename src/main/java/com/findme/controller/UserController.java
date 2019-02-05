@@ -2,6 +2,7 @@ package com.findme.controller;
 
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
+import com.findme.exception.UserNotFoundException;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,13 @@ public class UserController extends Utils<User> {
     }
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
-    public String profile(Model model, @PathVariable String userId){
-        if (userDAO.findById(Long.parseLong(userId)) == null){
-            return "exception1";
+    public String profile(Model model, @PathVariable String userId) throws UserNotFoundException {
+        User user = userDAO.findById(Long.parseLong(userId));
+        if (user != null){
+            model.addAttribute("user", user);
         }
         else {
-            User user = userDAO.findById(Long.parseLong(userId));
-            model.addAttribute("user", user);
+            throw UserNotFoundException.createWith(userId);
         }
         return "profile";
     }
