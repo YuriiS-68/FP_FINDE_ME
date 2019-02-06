@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -30,16 +31,19 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
     public String profile(Model model, @PathVariable String userId) {
-        User user = userDAO.findById(Long.parseLong(userId));
-        if (user != null){
+        try {
+            User user = userDAO.findById(Long.parseLong(userId));
+            if (user == null){
+                Alias alias = new Alias();
+                alias.setUserId(userId);
+                model.addAttribute("alias", alias);
+                return "exception_null";
+            }
             model.addAttribute("user", user);
             return "profile";
-        }
-        else {
-            Alias alias = new Alias();
-            alias.setUserId(userId);
-            model.addAttribute("alias", alias);
-            return "exception1";
+        }catch (InternalError e){
+            model.addAttribute("error", e);
+            return "exception_server";
         }
     }
 
