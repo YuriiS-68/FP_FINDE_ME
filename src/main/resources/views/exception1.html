@@ -6,7 +6,19 @@
 </head>
   <body>
 
-    <h1>Page not found</h1>
+    <!--/*@thymesVar id="alias" type="com.findme.models.Alias"*/-->
+    <h1>Exception 404</h1>
+
+    <div class="container">
+        <p>User page not found with ID - <span th:text="${alias.getUserId()}">.</span>
+    </div>
 
   </body>
+
+  <style>
+      .container{
+          float: left;
+      }
+  </style>
+
 </html>
