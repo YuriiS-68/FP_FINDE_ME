@@ -2,6 +2,7 @@ package com.findme.controller;
 
 import com.findme.dao.PostDAO;
 import com.findme.exception.BadRequestException;
+import com.findme.exception.InternalServerError;
 import com.findme.models.Post;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class PostController extends Utils<Post> {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/updatePost", produces = "text/plain")
     public @ResponseBody
-    String update(HttpServletRequest req)throws IOException, BadRequestException{
+    String update(HttpServletRequest req)throws IOException, BadRequestException, InternalServerError {
         Post post = mappingObject(req);
         long inputId = Long.parseLong(req.getParameter("postId"));
 
@@ -62,7 +63,7 @@ public class PostController extends Utils<Post> {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/deletePost", produces = "text/plain")
     public @ResponseBody
-    String delete(HttpServletRequest req)throws BadRequestException{
+    String delete(HttpServletRequest req)throws BadRequestException, InternalServerError {
         Post post = postDAO.findById(Long.parseLong(req.getParameter("postId")));
         long postId = Long.parseLong(req.getParameter("postId"));
 

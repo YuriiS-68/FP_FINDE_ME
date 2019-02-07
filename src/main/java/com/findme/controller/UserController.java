@@ -2,7 +2,7 @@ package com.findme.controller;
 
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
-import com.findme.models.Alias;
+import com.findme.exception.InternalServerError;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.HttpServerErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -31,24 +30,19 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
     public String profile(Model model, @PathVariable String userId) {
-        Alias alias = new Alias();
         try {
             User user = userDAO.findById(Long.parseLong(userId));
             if (user == null){
-                alias.setUserId(userId);
-                model.addAttribute("alias", alias);
-                return "errors/exception_null";
+                model.addAttribute(userId);
+                return "errors/exception_npe";
             }
             model.addAttribute("user", user);
             return "profile";
         }catch (NumberFormatException e){
-            alias.setUserId(userId);
-            model.addAttribute("alias", alias);
+            model.addAttribute(userId);
             return "errors/exception_number_format";
-        }catch (HttpServerErrorException.InternalServerError e){
-            e.getMessage();
-            model.addAttribute("error", e);
-            return "errors/exception_server";
+        }catch (InternalServerError e){
+            return "errors/exception_internal_server";
         }
     }
 
@@ -69,7 +63,7 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/updateUser", produces = "text/plain")
     public @ResponseBody
-    String update(HttpServletRequest req)throws IOException, BadRequestException{
+    String update(HttpServletRequest req)throws IOException, BadRequestException, InternalServerError{
         User user = mappingObject(req);
         long inputId = Long.parseLong(req.getParameter("userId"));
 
@@ -89,7 +83,7 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteUser", produces = "text/plain")
     public @ResponseBody
-    String delete(HttpServletRequest req)throws BadRequestException{
+    String delete(HttpServletRequest req)throws BadRequestException, InternalServerError{
         User user = userDAO.findById(Long.parseLong(req.getParameter("userId")));
         long userId = Long.parseLong(req.getParameter("userId"));
 

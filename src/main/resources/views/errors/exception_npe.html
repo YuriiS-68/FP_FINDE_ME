@@ -6,11 +6,11 @@
 </head>
   <body>
 
-    <!--/*@thymesVar id="alias" type="com.findme.models.Alias"*/-->
-    <h1>Exception 404</h1>
+    <!--/*@thymesVar id="userId" type="com.findme.controller"*/-->
+    <h1>Null Pointer Exception 404</h1>
 
     <div class="container">
-        <p>User page not found with ID - <span th:text="${alias.getUserId()}">.</span>
+        <p>User page not found with ID - <span th:text="${userId}">.</span>
     </div>
 
   </body>

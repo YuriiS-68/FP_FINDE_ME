@@ -6,11 +6,12 @@
 </head>
 <body>
 
-<h1>HTTP Status 500 Internal Server Error</h1>
+<h1>Number Format Exception 400</h1>
 
-<!--/*@thymesVar id="alias" type="com.findme.models.Alias"*/-->
 <div class="container">
-    <p>Data entered in wrong format - <span th:text="${alias.getUserId()}">.</span>
+        <!--/*@thymesVar id="userId" type="com.findme.controller"*/-->
+    <p>Data entered in wrong format - <span th:text="${userId}">.</span>
+
 </div>
 
 </body>

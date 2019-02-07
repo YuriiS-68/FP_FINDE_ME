@@ -1,5 +1,6 @@
 package com.findme.dao;
 
+import com.findme.exception.InternalServerError;
 import com.findme.models.IdEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +32,11 @@ public abstract class GeneralDAO<T extends IdEntity> implements GenericEntityDAO
         entityManager.merge(t);
     }
 
-    public void delete(Long id){
+    public void delete(Long id)throws InternalServerError{
         entityManager.remove(findById(id));
     }
 
-    public T findById(Serializable id){
+    public T findById(Serializable id) throws InternalServerError {
         return entityManager.find(getType(), id);
     }
 

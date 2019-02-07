@@ -2,6 +2,7 @@ package com.findme.service;
 
 import com.findme.dao.PostDAO;
 import com.findme.exception.BadRequestException;
+import com.findme.exception.InternalServerError;
 import com.findme.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class PostService {
         postDAO.update(post);
     }
 
-    public void delete(Long id)throws BadRequestException{
+    public void delete(Long id)throws BadRequestException, InternalServerError {
         if (id == null){
             throw new BadRequestException("The ID entered does not exist");
         }
