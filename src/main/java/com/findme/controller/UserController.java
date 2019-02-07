@@ -31,19 +31,24 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
     public String profile(Model model, @PathVariable String userId) {
+        Alias alias = new Alias();
         try {
             User user = userDAO.findById(Long.parseLong(userId));
             if (user == null){
-                Alias alias = new Alias();
                 alias.setUserId(userId);
                 model.addAttribute("alias", alias);
-                return "exception_null";
+                return "errors/exception_null";
             }
             model.addAttribute("user", user);
             return "profile";
-        }catch (InternalError e){
+        }catch (NumberFormatException e){
+            alias.setUserId(userId);
+            model.addAttribute("alias", alias);
+            return "errors/exception_number_format";
+        }catch (HttpServerErrorException.InternalServerError e){
+            e.getMessage();
             model.addAttribute("error", e);
-            return "exception_server";
+            return "errors/exception_server";
         }
     }
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NumberFormatException</title>
+</head>
+<body>
+
+<h1>HTTP Status 500 Internal Server Error</h1>
+
+<!--/*@thymesVar id="alias" type="com.findme.models.Alias"*/-->
+<div class="container">
+    <p>Data entered in wrong format - <span th:text="${alias.getUserId()}">.</span>
+</div>
+
+</body>
+
+<style>
+    .container{
+        float: left;
+    }
+</style>
+
+</html>
