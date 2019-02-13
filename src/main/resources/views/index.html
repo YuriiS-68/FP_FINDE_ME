@@ -1,26 +1,106 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <title>Find me</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!--<link rel="stylesheet" href="css/style.css">-->
+    <style>
+        label {
+            width: 80px;
+            display: block;
+            padding: 5px 0;
+            float: left;
+            clear: left;
+            margin-left: 50px;
+        }
+        button {
+            width: 120px;
+            height: 40px;
+            border-radius: 5px;
+            margin-top: 570px;
+            margin-left: -57px;
+            font-size: large;
+            background-color: transparent;
+            border: 2px solid #f05a22;
+        }
+    </style>
 </head>
 <body>
 
 <!--<div th:replace="fragments/header :: header" />-->
 
 <div class="container">
+
     <div class="starter-template">
         <h1>Welcome to Find me!</h1>
     </div>
-    <div class="someClass">
-        Styled text here
-        <!--/*@thymesVar id="text" type="java"*/-->
-        <p th:text="${text}"></p>
-    </div>
-</div>
 
+    <form id="registration-form">
+        <label >First name:
+            <input type="text" name="firstName" required>
+        </label>
+        <label>Last name:
+            <input type="text" name="lastName" required>
+        </label>
+        <label>Phone:
+            <input type="text" name="phone" required>
+        </label>
+        <label>Email:
+            <input type="text" name="email" required>
+        </label>
+        <label>Country:
+            <input type="text" name="country" required>
+        </label>
+        <label>City:
+            <input type="text" name="city" required>
+        </label>
+        <label>Age:
+            <input type="text" name="age" required>
+        </label>
+        <label>Relationship status:
+            <input type="text" name="relationshipStatus" required>
+        </label>
+        <label>Religion:
+            <input type="text" name="religion" required>
+        </label>
+        <label>School:
+            <input type="text" name="school" required>
+        </label>
+        <label>University:
+            <input type="text" name="university" required>
+        </label>
+        <button type="submit">Entered</button>
+    </form>
+
+    <!--<button id="test-ajax">Click here!</button>-->
+    <!--/*@thymesVar id="text" type="java"*/-->
+    <!--<p th:text="${text}"></p>-->
+
+</div>
 <!-- /.container -->
 <!---->
 <!--<div th:replace="fragments/footer :: footer" />-->
-
+<script>
+    $("#registration-form").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/register-user",
+            data: $('#registration-form').serialize(),
+            success: function success() {
+                debugger;
+                alert("User registered success!");
+            },
+            error: function error(xhr, status, errorThrown) {
+                debugger;
+                alert("User registration failed with: " + status + "." + errorThrown + "The user with such email or " +
+                    "phone is already registered in the system.");
+            }
+        });
+    });
+</script>
 </body>
+
+<!--<footer>Footer</footer>-->
+
 </html>

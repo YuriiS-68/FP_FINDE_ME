@@ -19,6 +19,7 @@ public class User extends IdEntity{
     private String firstName;
     private String lastName;
     private String phone;
+    private String email;
     //TODO from existed data
     private String country;
     private String city;
@@ -64,6 +65,9 @@ public class User extends IdEntity{
     public String getPhone() {
         return phone;
     }
+
+    @Column(name = "EMAIL", nullable = false)
+    public String getEmail(){ return email; }
 
     @Column(name = "COUNTRY", nullable = false)
     public String getCountry() {
@@ -154,6 +158,7 @@ public class User extends IdEntity{
                 firstName.equals(user.firstName) &&
                 lastName.equals(user.lastName) &&
                 phone.equals(user.phone) &&
+                email.equals(user.email) &&
                 country.equals(user.country) &&
                 city.equals(user.city) &&
                 age.equals(user.age) &&
@@ -167,7 +172,7 @@ public class User extends IdEntity{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, phone, country, city, age, dateRegistered, dateLastActive,
+        return Objects.hash(id, firstName, lastName, phone, email, country, city, age, dateRegistered, dateLastActive,
                 relationshipStatus, religion, school, university);
     }
 
@@ -178,6 +183,7 @@ public class User extends IdEntity{
                 .add("firstName='" + firstName + "'")
                 .add("lastName='" + lastName + "'")
                 .add("phone='" + phone + "'")
+                .add("email='" + email + "'")
                 .add("country='" + country + "'")
                 .add("city='" + city + "'")
                 .add("age=" + age)
@@ -204,6 +210,10 @@ public class User extends IdEntity{
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setCountry(String country) {

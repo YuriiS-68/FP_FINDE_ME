@@ -1,0 +1,12 @@
+button:focus {
+    outline: none;
+}
+#test-ajax{
+    width: 120px;
+    height: 40px;
+    border-radius: 5px;
+    margin-top: 20px;
+    font-size: large;
+    background-color: transparent;
+    border: 2px solid #f05a22;
+}

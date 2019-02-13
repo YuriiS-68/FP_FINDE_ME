@@ -6,15 +6,15 @@ import com.findme.exception.InternalServerError;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Date;
 
 @Controller
 public class UserController extends Utils<User> {
@@ -43,6 +43,20 @@ public class UserController extends Utils<User> {
             return "errors/exception_number_format";
         }catch (InternalServerError e){
             return "errors/exception_internal_server";
+        }
+    }
+
+    @RequestMapping(path = "/register-user", method = RequestMethod.POST)
+    public ResponseEntity<String> registerUser(@ModelAttribute User user)throws BadRequestException{
+        if (userDAO.findUserByFields(user)){
+            Date dateRegister = new Date();
+            user.setDateRegistered(dateRegister);
+            user.setDateLastActive(dateRegister);
+            userService.save(user);
+            return new ResponseEntity<>("User registered success!", HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("This user can not registered.", HttpStatus.BAD_REQUEST);
         }
     }
 
