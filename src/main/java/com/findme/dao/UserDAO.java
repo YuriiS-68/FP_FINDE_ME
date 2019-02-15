@@ -15,13 +15,13 @@ public class UserDAO extends GeneralDAO<User> {
     private static final String FIND_USER_WITH_FIELDS_MAIL_AND_PHONE = "SELECT * FROM USER_FM WHERE PHONE = ? OR EMAIL = ?";
 
     @SuppressWarnings("unchecked")
-    public boolean findUserByFields(User user) throws InternalServerError {
+    public boolean findUserByFields(User user) {
         NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(FIND_USER_WITH_FIELDS_MAIL_AND_PHONE, User.class);
         try {
             user = query.setParameter(1, user.getPhone()).setParameter(2, user.getEmail()).uniqueResult();
         }catch (NoResultException e){
             System.err.println(e.getMessage());
-            throw new InternalServerError("Database is not responding. Try later.");
+            throw e;
         }
         return user == null;
     }
