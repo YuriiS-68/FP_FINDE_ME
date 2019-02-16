@@ -48,7 +48,11 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
     public ResponseEntity<String> registerUser(@ModelAttribute User user)throws BadRequestException{
-        if (user != null){
+        if (user == null){
+            return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
             if (userDAO.findUserByFields(user)){
                 Date dateRegister = new Date();
                 user.setDateRegistered(dateRegister);
@@ -59,8 +63,7 @@ public class UserController extends Utils<User> {
             else {
                 return new ResponseEntity<>("This user can not registered.", HttpStatus.BAD_REQUEST);
             }
-        }
-        else {
+        }catch (InternalServerError e){
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -69,10 +72,8 @@ public class UserController extends Utils<User> {
     public @ResponseBody
     String save(HttpServletRequest req) throws IOException, BadRequestException {
         User user = mappingObject(req);
-
         try {
             userService.save(user);
-
         }catch (BadRequestException e){
             System.err.println(e.getMessage());
             throw e;
