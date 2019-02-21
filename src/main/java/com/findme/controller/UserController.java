@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
 
@@ -46,8 +47,18 @@ public class UserController extends Utils<User> {
         }
     }
 
+    @RequestMapping(path = "/index", method = RequestMethod.GET)
+    public String mainePage(){
+        return "index";
+    }
+
+    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    public String registerPage(){
+        return "register";
+    }
+
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
-    public ResponseEntity<String> registerUser(@ModelAttribute User user)throws BadRequestException{
+    public ResponseEntity<String> registerUser(@ModelAttribute User user){
         if (user == null){
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
@@ -65,6 +76,48 @@ public class UserController extends Utils<User> {
             }
         }catch (InternalServerError e){
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>("This user can not registered.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(path = "/login-in", method = RequestMethod.GET)
+    public String loginPage(){
+        return "login-in";
+    }
+
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public ResponseEntity<String> loginUser(HttpSession session, @ModelAttribute User inputUser) {
+        if (inputUser == null){
+            return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            if (userDAO.findUserByEmail(inputUser) == null){
+                return new ResponseEntity<>("Login or password is correct.", HttpStatus.BAD_REQUEST);
+            }
+            User user = userDAO.findUserByEmail(inputUser);
+            if (user.getEmail().equals(inputUser.getEmail()) && user.getPassword().equals(inputUser.getPassword()) && session.isNew()){
+                session.setAttribute("user", user);
+                session.setMaxInactiveInterval(1800);
+                return new ResponseEntity<>("User login success!", HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
+            }
+        }catch (InternalServerError e){
+            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/logout", method = RequestMethod.POST)
+    public ResponseEntity<String> logout(HttpSession session){
+        try {
+            session.invalidate();
+            return new ResponseEntity<>("You are logged out. ", HttpStatus.OK);
+        }
+        catch (IllegalStateException e){
+            return new ResponseEntity<>("Session does not exist.", HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        label {
+            width: 80px;
+            display: block;
+            padding: 5px 0;
+            float: left;
+            clear: left;
+            margin-left: 50px;
+        }
+        button {
+            width: 120px;
+            height: 40px;
+            border-radius: 5px;
+            margin-top: 115px;
+            margin-left: -55px;
+            font-size: large;
+            background-color: transparent;
+            border: 2px solid #f05a22;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="starter-template">
+            <h1>Enter login and password</h1>
+        </div>
+
+        <form id="login-form">
+            <label >Login:
+                <input type="text" name="email" required>
+            </label>
+            <label>Password:
+                <input type="text" name="password" required>
+            </label>
+            <button type="submit">Ok</button>
+        </form>
+    </div>
+    <script>
+        $("#login-form").submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/login",
+                data: $('#login-form').serialize(),
+                success: function success() {
+                    debugger;
+                    alert("User is logged in successfully!");
+                    window.location.href = "index.html";
+                },
+                error: function error(xhr, status, errorThrown) {
+                    debugger;
+                    alert("User is logged failed with: " + status + "." + errorThrown);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

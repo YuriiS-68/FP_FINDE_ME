@@ -20,6 +20,7 @@ public class User extends IdEntity{
     private String lastName;
     private String phone;
     private String email;
+    private String password;
     //TODO from existed data
     private String country;
     private String city;
@@ -68,6 +69,11 @@ public class User extends IdEntity{
 
     @Column(name = "EMAIL", nullable = false)
     public String getEmail(){ return email; }
+
+    @Column(name = "PASSWORD_USER")
+    public String getPassword() {
+        return password;
+    }
 
     @Column(name = "COUNTRY", nullable = false)
     public String getCountry() {
@@ -159,6 +165,7 @@ public class User extends IdEntity{
                 lastName.equals(user.lastName) &&
                 phone.equals(user.phone) &&
                 email.equals(user.email) &&
+                password.equals(user.password) &&
                 country.equals(user.country) &&
                 city.equals(user.city) &&
                 age.equals(user.age) &&
@@ -172,7 +179,7 @@ public class User extends IdEntity{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, phone, email, country, city, age, dateRegistered, dateLastActive,
+        return Objects.hash(id, firstName, lastName, phone, email, password, country, city, age, dateRegistered, dateLastActive,
                 relationshipStatus, religion, school, university);
     }
 
@@ -184,6 +191,7 @@ public class User extends IdEntity{
                 .add("lastName='" + lastName + "'")
                 .add("phone='" + phone + "'")
                 .add("email='" + email + "'")
+                .add("password='" + password + "'")
                 .add("country='" + country + "'")
                 .add("city='" + city + "'")
                 .add("age=" + age)
@@ -198,6 +206,10 @@ public class User extends IdEntity{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setFirstName(String firstName) {

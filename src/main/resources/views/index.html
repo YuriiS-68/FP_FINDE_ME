@@ -1,106 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="UTF-8">
     <title>Find me</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!--<link rel="stylesheet" href="css/style.css">-->
     <style>
-        label {
-            width: 80px;
-            display: block;
-            padding: 5px 0;
-            float: left;
-            clear: left;
-            margin-left: 50px;
+        body {
+            margin: 0;
+        }
+        h1 {
+            margin-top: 50px;
+            width: 80%;
+            text-align: center;
+        }
+        a {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            margin-right: 30px;
+            padding: 8px;
+            background-color: white;
+            color: dodgerblue;
+            text-decoration: none;
+            font-size: 20px;
         }
         button {
-            width: 120px;
-            height: 40px;
-            border-radius: 5px;
-            margin-top: 570px;
-            margin-left: -57px;
-            font-size: large;
-            background-color: transparent;
-            border: 2px solid #f05a22;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: white;
+            color: dodgerblue;
+            font-size: 20px;
+        }
+        button:hover {
+            color: #f9dccc;
+        }
+        a:hover {
+            color: #f9dccc;
+        }
+        #register {
+            margin-left: 1600px;
+        }
+        .navigate {
+            display: flex;
+            height: 60px;
+            border: 1px solid #ffffff;
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
 
-<!--<div th:replace="fragments/header :: header" />-->
-
-<div class="container">
-
-    <div class="starter-template">
-        <h1>Welcome to Find me!</h1>
-    </div>
-
-    <form id="registration-form">
-        <label >First name:
-            <input type="text" name="firstName" required>
-        </label>
-        <label>Last name:
-            <input type="text" name="lastName" required>
-        </label>
-        <label>Phone:
-            <input type="text" name="phone" required>
-        </label>
-        <label>Email:
-            <input type="text" name="email" required>
-        </label>
-        <label>Country:
-            <input type="text" name="country" required>
-        </label>
-        <label>City:
-            <input type="text" name="city" required>
-        </label>
-        <label>Age:
-            <input type="text" name="age" required>
-        </label>
-        <label>Relationship status:
-            <input type="text" name="relationshipStatus" required>
-        </label>
-        <label>Religion:
-            <input type="text" name="religion" required>
-        </label>
-        <label>School:
-            <input type="text" name="school" required>
-        </label>
-        <label>University:
-            <input type="text" name="university" required>
-        </label>
-        <button type="submit">Entered</button>
+<nav class="navigate">
+    <a id="register" href="register.html">Sign up</a>
+    <a href="login-in.html">Sign in</a>
+    <form id="exit">
+        <button type="submit">Exit</button>
     </form>
+</nav>
 
-    <!--<button id="test-ajax">Click here!</button>-->
-    <!--/*@thymesVar id="text" type="java"*/-->
-    <!--<p th:text="${text}"></p>-->
+<h1>Welcome to the project Find me.</h1>
 
-</div>
-<!-- /.container -->
-<!---->
-<!--<div th:replace="fragments/footer :: footer" />-->
 <script>
-    $("#registration-form").submit(function (e) {
+    $("#exit").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "POST",
-            url: "/register-user",
-            data: $('#registration-form').serialize(),
+            url: "/logout",
+            data: $('#exit').serialize(),
             success: function success() {
                 debugger;
-                alert("User registered success!");
+                alert("You are logged out of the application.");
             },
             error: function error(xhr, status, errorThrown) {
                 debugger;
-                alert("User registration failed with: " + status + "." + errorThrown + "The user with such email or " +
-                    "phone is already registered in the system.");
+                alert("Failed to exit with: " + status + "." + errorThrown);
             }
         });
     });
 </script>
 </body>
-
-<!--<footer>Footer</footer>-->
-
 </html>
