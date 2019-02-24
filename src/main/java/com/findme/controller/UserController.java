@@ -3,6 +3,7 @@ package com.findme.controller;
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
+import com.findme.models.Form;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,21 +87,28 @@ public class UserController extends Utils<User> {
         return "login-in";
     }
 
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logoutPage(){
+        return "logout";
+    }
+
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public ResponseEntity<String> loginUser(HttpSession session, @ModelAttribute User inputUser) {
-        if (inputUser == null){
+    public ResponseEntity<String> loginUser(HttpSession session, @ModelAttribute Form form) {
+        if (form == null){
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
         try {
-            if (userDAO.findUserByEmail(inputUser) == null){
+            User user = userDAO.findUserByEmail(form.getEmail());
+            if (user == null){
                 return new ResponseEntity<>("Login or password is correct.", HttpStatus.BAD_REQUEST);
             }
-            User user = userDAO.findUserByEmail(inputUser);
-            if (user.getEmail().equals(inputUser.getEmail()) && user.getPassword().equals(inputUser.getPassword()) && session.isNew()){
-                session.setAttribute("user", user);
+
+            if (user.getEmail().equals(form.getEmail()) && user.getPassword().equals(form.getPassword())){
+                session.setAttribute(user.getEmail(), user);
+                System.out.println("User with login - " + user.getEmail() + " added in session with id - " + session.getId());
                 session.setMaxInactiveInterval(1800);
-                return new ResponseEntity<>("User login success!", HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
@@ -110,14 +118,30 @@ public class UserController extends Utils<User> {
         }
     }
 
-    @RequestMapping(path = "/logout", method = RequestMethod.POST)
-    public ResponseEntity<String> logout(HttpSession session){
-        try {
-            session.invalidate();
-            return new ResponseEntity<>("You are logged out. ", HttpStatus.OK);
+    @RequestMapping(path = "/logout-user", method = RequestMethod.POST)
+    public ResponseEntity<String> logout(HttpSession session, @ModelAttribute Form form){
+        if (form == null){
+            return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
-        catch (IllegalStateException e){
-            return new ResponseEntity<>("Session does not exist.", HttpStatus.BAD_REQUEST);
+
+        try {
+            User user = userDAO.findUserByEmail(form.getEmail());
+
+            if (user == null){
+                return new ResponseEntity<>("Login is correct.", HttpStatus.BAD_REQUEST);
+            }
+
+            if (session.getAttribute(user.getEmail()) != null){
+                session.removeAttribute(user.getEmail());
+                System.out.println("User with login - " + user.getEmail() + " logout from session with id - " + session.getId());
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            else {
+                return new ResponseEntity<>("User with login " + user.getEmail() + " already logout.", HttpStatus.BAD_REQUEST);
+            }
+        }
+        catch (InternalServerError e){
+            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
