@@ -106,7 +106,6 @@ public class UserController extends Utils<User> {
 
             if (user.getEmail().equals(form.getEmail()) && user.getPassword().equals(form.getPassword())){
                 session.setAttribute(user.getEmail(), user);
-                System.out.println("User with login - " + user.getEmail() + " added in session with id - " + session.getId());
                 session.setMaxInactiveInterval(1800);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
@@ -133,7 +132,6 @@ public class UserController extends Utils<User> {
 
             if (session.getAttribute(user.getEmail()) != null){
                 session.removeAttribute(user.getEmail());
-                System.out.println("User with login - " + user.getEmail() + " logout from session with id - " + session.getId());
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
