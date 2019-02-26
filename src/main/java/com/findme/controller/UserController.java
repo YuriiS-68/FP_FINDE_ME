@@ -92,19 +92,20 @@ public class UserController extends Utils<User> {
         return "logout";
     }
 
-    @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public ResponseEntity<String> loginUser(HttpSession session, @ModelAttribute Form form) {
-        if (form == null){
+    @RequestMapping(path = "/login", method = RequestMethod.GET)
+    public ResponseEntity<String> loginUser(HttpSession session, @RequestParam(value = "email") String login,
+                                            @RequestParam(value = "password") String pass) {
+        if (login == null || pass == null){
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
         try {
-            User user = userDAO.findUserByEmail(form.getEmail());
+            User user = userDAO.findUserByEmail(login);
             if (user == null){
                 return new ResponseEntity<>("Login or password is correct.", HttpStatus.BAD_REQUEST);
             }
 
-            if (user.getEmail().equals(form.getEmail()) && user.getPassword().equals(form.getPassword())){
+            if (user.getEmail().equals(login) && user.getPassword().equals(pass)){
                 session.setAttribute(user.getEmail(), user);
                 session.setMaxInactiveInterval(1800);
                 return new ResponseEntity<>(HttpStatus.OK);
