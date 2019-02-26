@@ -32,27 +32,24 @@
         <h1>Enter login</h1>
     </div>
 
-    <form id="exit">
-        <label >Login:
-            <input type="text" name="email" required>
-        </label>
-        <button type="submit">Exit</button>
-    </form>
+    <label >Login:
+        <input id="login" name="email" required>
+    </label>
+    <button id="exit">Exit</button>
 </div>
 <script>
-    $("#exit").submit(function (e) {
+    $("#exit").click(function (e) {
         e.preventDefault();
+        var login = $('#login').val();
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "/logout-user",
-            data: $('#exit').serialize(),
+            data: "email=" + login,
             success: function success() {
-                debugger;
                 alert("You are logged out of the application.");
                 window.location.href = "index.html";
             },
             error: function error(xhr, status, errorThrown) {
-                debugger;
                 alert("Failed to exit with: " + status + "." + errorThrown);
             }
         });

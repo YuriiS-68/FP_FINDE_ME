@@ -3,7 +3,6 @@ package com.findme.controller;
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
-import com.findme.models.Form;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,14 +117,14 @@ public class UserController extends Utils<User> {
         }
     }
 
-    @RequestMapping(path = "/logout-user", method = RequestMethod.POST)
-    public ResponseEntity<String> logout(HttpSession session, @ModelAttribute Form form){
-        if (form == null){
+    @RequestMapping(path = "/logout-user", method = RequestMethod.GET)
+    public ResponseEntity<String> logout(HttpSession session, @RequestParam(value = "email") String login){
+        if (login == null){
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
         try {
-            User user = userDAO.findUserByEmail(form.getEmail());
+            User user = userDAO.findUserByEmail(login);
 
             if (user == null){
                 return new ResponseEntity<>("Login is correct.", HttpStatus.BAD_REQUEST);
