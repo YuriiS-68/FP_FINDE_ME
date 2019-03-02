@@ -10,6 +10,7 @@
     <div class="left">
         <div class="starter-template">
             <h1>Photo</h1>
+            <img class="user-photo" src="#" alt="photo">
         </div>
 
         <div>
@@ -17,10 +18,7 @@
         </div>
     </div>
 
-    <div class="right">
-        Styled text here
-    </div>
-    <div class="right">
+    <div class="center">
         <!--/*@thymesVar id="user" type="com.findme.models.User"*/-->
         <p th:text="${user.getFirstName()}"></p>
         <p th:text="${user.getLastName()}"></p>
@@ -36,6 +34,12 @@
         <p th:text="${user.getUniversity()}"></p>
     </div>
 
+    <div class="right">
+        <button class="button">Add in friends</button>
+        <button class="button_del">Delete from friends</button>
+    </div>
+    <!-- /.right -->
+
 <!-- /.container -->
 <!---->
 <!--<div th:replace="fragments/footer :: footer" />-->
@@ -45,17 +49,47 @@
 <style>
     .left{
         float: left;
+        width: 400px;
+        height: 480px;
+        /*border-style: solid;*/
+    }
+    .user-photo {
+        width: 100%;
+    }
+    .center{
+        display: inline-block;
+        margin-left: 140px;
+        width: 500px;
+        height: 600px;
+        /*border-style: solid;*/
+    }
+    .right {
+        display: inline-block;
+        float: right;
+        margin-right: 515px;
         width: 200px;
         height: 300px;
-        border-style: solid;
+        /*border-style: solid;*/
     }
-
-    .right{
-        margin-left: 300px;
+    button {
+        width: 120px;
+        height: 50px;
+        border-radius: 5px;
+        font-size: large;
+        background-color: transparent;
+        border: 2px solid green;
     }
-
     .btn{
-        margin-top: 230px;
+        margin-top: 50px;
+        border: 2px solid blue;
+        /*border: 2px solid #f05a22;*/
+    }
+    .button {
+        margin-top: 25px;
+    }
+    .button_del {
+        margin-top: 25px;
+        border: 2px solid red;
     }
 </style>
 

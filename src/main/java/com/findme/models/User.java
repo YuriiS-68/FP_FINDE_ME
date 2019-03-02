@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.*;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Entity
 @Table(name = "USER_FM")
@@ -21,22 +18,21 @@ public class User extends IdEntity{
     private String phone;
     private String email;
     private String password;
-    //TODO from existed data
     private String country;
     private String city;
-
     private Integer age;
     private Date dateRegistered;
     private Date dateLastActive;
     private RelationshipType relationshipStatus;
     private ReligionType religion;
-    //TODO from existed data
     private String school;
     private String university;
 
     private List<Message> messageSent;
     private List<Message> messageReceived;
     private List<Post> posts;
+    private Set<Relationship> statusUserFrom = new HashSet<>();
+    private Set<Relationship> statusUserTo = new HashSet<>();
 
     //private String[] interests;
 
@@ -140,6 +136,22 @@ public class User extends IdEntity{
     @OneToMany(mappedBy = "userPosted", fetch = FetchType.LAZY, targetEntity = Post.class)
     public List<Post> getPosts() {
         return posts;
+    }
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "USER_RELATION", joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "RELATION_ID"))
+    public Set<Relationship> getStatusUserFrom() {
+        return statusUserFrom;
+    }
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "RELATIONSHIP", joinColumns = {@JoinColumn(name = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "RELATION_ID")})
+    public Set<Relationship> getStatusUserTo() {
+        return statusUserTo;
     }
 
     @JsonCreator
@@ -274,5 +286,13 @@ public class User extends IdEntity{
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public void setStatusUserFrom(Set<Relationship> statusUserFrom) {
+        this.statusUserFrom = statusUserFrom;
+    }
+
+    public void setStatusUserTo(Set<Relationship> statusUserTo) {
+        this.statusUserTo = statusUserTo;
     }
 }

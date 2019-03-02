@@ -3,7 +3,10 @@ package com.findme.controller;
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
+import com.findme.models.Relationship;
+import com.findme.models.RelationshipStatusType;
 import com.findme.models.User;
+import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,11 +25,13 @@ public class UserController extends Utils<User> {
 
     private UserService userService;
     private UserDAO userDAO;
+    private RelationshipService relationshipService;
 
     @Autowired
-    public UserController(UserService userService, UserDAO userDAO) {
+    public UserController(UserService userService, UserDAO userDAO, RelationshipService relationshipService) {
         this.userService = userService;
         this.userDAO = userDAO;
+        this.relationshipService = relationshipService;
     }
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
@@ -69,6 +74,10 @@ public class UserController extends Utils<User> {
                 user.setDateRegistered(dateRegister);
                 user.setDateLastActive(dateRegister);
                 userService.save(user);
+                Relationship relationship = new Relationship();
+                relationship.setUserFrom(user);
+                relationship.setStatusType(RelationshipStatusType.never_been_friends);
+                relationshipService.save(relationship);
                 return new ResponseEntity<>("User registered success!", HttpStatus.OK);
             }
             else {
@@ -202,5 +211,9 @@ public class UserController extends Utils<User> {
 
     public void setUserDAO(UserDAO userDAO) {
         this.userDAO = userDAO;
+    }
+
+    public void setRelationshipService(RelationshipService relationshipService) {
+        this.relationshipService = relationshipService;
     }
 }
