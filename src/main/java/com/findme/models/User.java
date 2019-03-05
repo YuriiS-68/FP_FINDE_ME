@@ -9,8 +9,8 @@ import javax.persistence.*;
 import java.io.IOException;
 import java.util.*;
 
-@Entity
-@Table(name = "USER_FM")
+@Entity(name = "User")
+@Table(name = "USERS1")
 public class User extends IdEntity{
     private Long id;
     private String firstName;
@@ -23,7 +23,7 @@ public class User extends IdEntity{
     private Integer age;
     private Date dateRegistered;
     private Date dateLastActive;
-    private RelationshipType relationshipStatus;
+    private RelationshipType relationship;
     private ReligionType religion;
     private String school;
     private String university;
@@ -31,8 +31,7 @@ public class User extends IdEntity{
     private List<Message> messageSent;
     private List<Message> messageReceived;
     private List<Post> posts;
-    private Set<Relationship> statusUserFrom = new HashSet<>();
-    private Set<Relationship> statusUserTo = new HashSet<>();
+    private Set<Relationship> statuses = new HashSet<>();
 
     //private String[] interests;
 
@@ -100,8 +99,8 @@ public class User extends IdEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "RELATIONSHIP_TYPE", nullable = false)
-    public RelationshipType getRelationshipStatus() {
-        return relationshipStatus;
+    public RelationshipType getRelationship() {
+        return relationship;
     }
 
     @Enumerated(EnumType.STRING)
@@ -139,19 +138,21 @@ public class User extends IdEntity{
     }
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "USER_RELATION", joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "RELATION_ID"))
-    public Set<Relationship> getStatusUserFrom() {
-        return statusUserFrom;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "USERS1_RELATIONSHIP", joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "RELATIONSHIP_ID"))
+    public Set<Relationship> getStatuses() {
+        return statuses;
     }
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "RELATIONSHIP", joinColumns = {@JoinColumn(name = "USER_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "RELATION_ID")})
-    public Set<Relationship> getStatusUserTo() {
-        return statusUserTo;
+    public void addRelationship(Relationship relationship){
+        statuses.add(relationship);
+        relationship.getUsers().add(this);
+    }
+
+    public void removeRelationship(Relationship relationship){
+        statuses.remove(relationship);
+        relationship.getUsers().remove(this);
     }
 
     @JsonCreator
@@ -183,7 +184,7 @@ public class User extends IdEntity{
                 age.equals(user.age) &&
                 dateRegistered.equals(user.dateRegistered) &&
                 dateLastActive.equals(user.dateLastActive) &&
-                relationshipStatus == user.relationshipStatus &&
+                relationship == user.relationship &&
                 religion == user.religion &&
                 school.equals(user.school) &&
                 university.equals(user.university);
@@ -192,7 +193,7 @@ public class User extends IdEntity{
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, phone, email, password, country, city, age, dateRegistered, dateLastActive,
-                relationshipStatus, religion, school, university);
+                relationship, religion, school, university);
     }
 
     @Override
@@ -209,7 +210,7 @@ public class User extends IdEntity{
                 .add("age=" + age)
                 .add("dateRegistered=" + dateRegistered)
                 .add("dateLastActive=" + dateLastActive)
-                .add("relationshipStatus=" + relationshipStatus)
+                .add("relationshipStatus=" + relationship)
                 .add("religion=" + religion)
                 .add("school='" + school + "'")
                 .add("university='" + university + "'")
@@ -260,8 +261,8 @@ public class User extends IdEntity{
         this.dateLastActive = dateLastActive;
     }
 
-    public void setRelationshipStatus(RelationshipType relationshipStatus) {
-        this.relationshipStatus = relationshipStatus;
+    public void setRelationship(RelationshipType relationship) {
+        this.relationship = relationship;
     }
 
     public void setReligion(ReligionType religion) {
@@ -288,11 +289,7 @@ public class User extends IdEntity{
         this.posts = posts;
     }
 
-    public void setStatusUserFrom(Set<Relationship> statusUserFrom) {
-        this.statusUserFrom = statusUserFrom;
-    }
-
-    public void setStatusUserTo(Set<Relationship> statusUserTo) {
-        this.statusUserTo = statusUserTo;
+    public void setStatuses(Set<Relationship> statuses) {
+        this.statuses = statuses;
     }
 }

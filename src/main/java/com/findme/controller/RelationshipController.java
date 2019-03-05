@@ -7,7 +7,6 @@ import com.findme.models.Relationship;
 import com.findme.models.RelationshipStatusType;
 import com.findme.models.User;
 import com.findme.service.RelationshipService;
-import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ public class RelationshipController extends Utils<Relationship> {
                 Relationship relationship = new Relationship();
                 relationship.setUserFrom(userFrom);
                 relationship.setUserTo(userTo);
-                relationship.setStatusType(RelationshipStatusType.friends);
+                relationship.setStatusType(RelationshipStatusType.FRIENDS);
                 relationshipService.save(relationship);
                 return new ResponseEntity<>(HttpStatus.OK);
             }

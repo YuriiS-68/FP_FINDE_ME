@@ -74,14 +74,10 @@ public class UserController extends Utils<User> {
                 user.setDateRegistered(dateRegister);
                 user.setDateLastActive(dateRegister);
                 userService.save(user);
-                Relationship relationship = new Relationship();
-                relationship.setUserFrom(user);
-                relationship.setStatusType(RelationshipStatusType.never_been_friends);
-                relationshipService.save(relationship);
                 return new ResponseEntity<>("User registered success!", HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>("This user can not registered.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("User with id " + user.getId() + " is not found.", HttpStatus.BAD_REQUEST);
             }
         }catch (InternalServerError e){
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);

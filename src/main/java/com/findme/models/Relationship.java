@@ -3,20 +3,20 @@ package com.findme.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.IOException;
 import java.util.*;
 
-@Entity
+@Entity(name = "Relationship")
 @Table(name = "RELATIONSHIP")
-public class Relationship extends IdEntity {
+public class Relationship extends IdEntity{
     private Long id;
     private User userFrom;
     private User userTo;
     private RelationshipStatusType statusType;
-    private Set<User> usersFrom = new HashSet<>();
-    private Set<User> usersTo = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     public Relationship() {
     }
@@ -30,35 +30,28 @@ public class Relationship extends IdEntity {
         return id;
     }
 
+    @NaturalId
     @Column(name = "ID_USER_FROM")
     public User getUserFrom() {
         return userFrom;
     }
 
+    @NaturalId
     @Column(name = "ID_USER_TO")
     public User getUserTo() {
         return userTo;
     }
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "STATUS_TYPE")
     public RelationshipStatusType getStatusType() {
         return statusType;
     }
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "statusUserFrom")
-    /*@JoinTable(name = "RELATIONSHIP", joinColumns = {@JoinColumn(name = "ID_USER_FROM")},
-            inverseJoinColumns = {@JoinColumn(name = "USER_ID")})*/
-    public Set<User> getUsersFrom() {
-        return usersFrom;
-    }
-
-    @JsonIgnore
-    @ManyToMany(mappedBy = "statusUserTo")
-    /*@JoinTable(name = "RELATIONSHIP", joinColumns = {@JoinColumn(name = "ID_USER_TO")},
-            inverseJoinColumns = {@JoinColumn(name = "USER_ID")})*/
-    public Set<User> getUsersTo() {
-        return usersTo;
+    @ManyToMany(mappedBy = "statuses")
+    Set<User> getUsers() {
+        return users;
     }
 
     @JsonCreator
@@ -116,11 +109,7 @@ public class Relationship extends IdEntity {
         this.statusType = statusType;
     }
 
-    public void setUsersFrom(Set<User> usersFrom) {
-        this.usersFrom = usersFrom;
-    }
-
-    public void setUsersTo(Set<User> usersTo) {
-        this.usersTo = usersTo;
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }
