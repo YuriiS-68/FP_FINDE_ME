@@ -3,7 +3,6 @@ package com.findme.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.IOException;
@@ -30,14 +29,14 @@ public class Relationship extends IdEntity{
         return id;
     }
 
-    @NaturalId
-    @Column(name = "ID_USER_FROM")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USER_FROM")
     public User getUserFrom() {
         return userFrom;
     }
 
-    @NaturalId
-    @Column(name = "ID_USER_TO")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USER_TO")
     public User getUserTo() {
         return userTo;
     }

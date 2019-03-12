@@ -3,7 +3,6 @@
 <head>
     <title>Find me</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!--<link rel="stylesheet" href="css/style.css">-->
 <style>
     label {
         width: 80px;
@@ -17,7 +16,7 @@
         width: 120px;
         height: 40px;
         border-radius: 5px;
-        margin-top: 620px;
+        margin-top: 610px;
         margin-left: -57px;
         font-size: large;
         background-color: transparent;
@@ -35,7 +34,7 @@
         <h1>Enter data</h1>
     </div>
 
-    <form id="registration-form">
+    <form id="form">
         <label >First name:
             <input type="text" name="firstName" required>
         </label>
@@ -60,6 +59,9 @@
         <label>Age:
             <input type="text" name="age" required>
         </label>
+        <label>Relationship:
+            <input type="text" name="relationship" required>
+        </label>
         <label>Religion:
             <input type="text" name="religion" required>
         </label>
@@ -81,21 +83,24 @@
 <!---->
 <!--<div th:replace="fragments/footer :: footer" />-->
 <script>
-    $("#registration-form").submit(function (e) {
-        e.preventDefault();
+    $("#form").submit(function (e) {
+        var form = $(this).serialize();
         $.ajax({
             type: "POST",
             url: "/register-user",
-            data: $('#registration-form').serialize(),
+            data: form,
             success: function success() {
+                debugger;
                 alert("User registered success!");
                 window.location.href = "index.html";
             },
             error: function error(xhr, status, errorThrown) {
+                debugger;
                 alert("User registration failed with: " + status + "." + errorThrown + "The user with such email or " +
                     "phone is already registered in the system.");
             }
         });
+        e.preventDefault();
     });
 </script>
 </body>

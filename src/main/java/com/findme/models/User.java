@@ -138,7 +138,7 @@ public class User extends IdEntity{
     }
 
     @JsonIgnore
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "USERS1_RELATIONSHIP", joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "RELATIONSHIP_ID"))
     public Set<Relationship> getStatuses() {

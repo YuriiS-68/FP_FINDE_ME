@@ -39,7 +39,6 @@
 </div>
 <script>
     $("#exit").click(function (e) {
-        e.preventDefault();
         var login = $('#login').val();
         $.ajax({
             type: "GET",
@@ -53,6 +52,7 @@
                 alert("Failed to exit with: " + status + "." + errorThrown);
             }
         });
+        e.preventDefault();
     });
 </script>
 </body>

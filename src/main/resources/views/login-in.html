@@ -43,7 +43,6 @@
     </div>
     <script>
         $("#login-form").click(function (e) {
-            e.preventDefault();
             var login = $('#login').val();
             var pass = $('#pass').val();
             $.ajax({
@@ -58,6 +57,7 @@
                     alert("User is logged failed with: " + status + "." + errorThrown);
                 }
             });
+            e.preventDefault();
         });
     </script>
 </body>

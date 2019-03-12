@@ -12,12 +12,13 @@ import javax.persistence.NoResultException;
 @Transactional
 public class UserDAO extends GeneralDAO<User> {
 
-    private static final String FIND_USER_WITH_FIELDS_EMAIL_AND_PHONE = "SELECT * FROM USER_FM WHERE PHONE = ? OR EMAIL = ?";
-    private static final String FIND_USER_BY_EMAIL = "SELECT * FROM USER_FM WHERE EMAIL = ?";
+    private static final String FIND_USER_WITH_FIELDS_EMAIL_AND_PHONE = "SELECT * FROM USERS1 WHERE PHONE = ? OR EMAIL = ?";
+    private static final String FIND_USER_BY_EMAIL = "SELECT * FROM USERS1 WHERE EMAIL = ?";
 
     @SuppressWarnings("unchecked")
     public boolean findUserByFields(User user) throws InternalServerError {
         NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(FIND_USER_WITH_FIELDS_EMAIL_AND_PHONE, User.class);
+
         try {
             user = query.setParameter(1, user.getPhone()).setParameter(2, user.getEmail()).uniqueResult();
         }catch (NoResultException e){

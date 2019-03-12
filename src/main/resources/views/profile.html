@@ -2,6 +2,59 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Find me</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        .left{
+            float: left;
+            width: 400px;
+            height: 480px;
+            /*border-style: solid;*/
+        }
+        .user-photo {
+            width: 100%;
+        }
+        .center{
+            display: inline-block;
+            margin-left: 140px;
+            width: 500px;
+            height: 600px;
+            /*border-style: solid;*/
+        }
+        .right {
+            display: inline-block;
+            float: right;
+            margin-right: 515px;
+            width: 200px;
+            height: 300px;
+            text-align: center;
+            font-size: 25px;
+            /*border-style: solid;*/
+        }
+        button {
+            width: 120px;
+            height: 50px;
+            border-radius: 5px;
+            font-size: large;
+            background-color: transparent;
+            border: 2px solid green;
+        }
+        .btn{
+            margin-top: 50px;
+            border: 2px solid blue;
+            /*border: 2px solid #f05a22;*/
+        }
+        .button {
+            margin-top: 25px;
+        }
+        .button_del {
+            margin-top: 25px;
+            border: 2px solid red;
+        }
+        .request {
+            margin-top: 25px;
+            border: 2px solid orange;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,7 +67,14 @@
         </div>
 
         <div>
+            <button id="add-friends" class="button">Add in friends</button>
+            <button id="delete" class="button_del">Delete from friends</button>
             <button class="btn">Send message</button>
+        </div>
+
+        <div>
+            <button id="accept" class="request">Accept request</button>
+            <button id="reject" class="request">Reject request</button>
         </div>
     </div>
 
@@ -28,15 +88,13 @@
         <p th:text="${user.getAge()}"></p>
         <p th:text="${user.getDateRegistered()}"></p>
         <p th:text="${user.getDateLastActive()}"></p>
-        <p th:text="${user.getRelationshipStatus()}"></p>
         <p th:text="${user.getReligion()}"></p>
         <p th:text="${user.getSchool()}"></p>
         <p th:text="${user.getUniversity()}"></p>
     </div>
 
-    <div class="right">
-        <button class="button">Add in friends</button>
-        <button class="button_del">Delete from friends</button>
+    <div id="relationship-status" class="right">
+        <p>Some one status</p>
     </div>
     <!-- /.right -->
 
@@ -44,53 +102,96 @@
 <!---->
 <!--<div th:replace="fragments/footer :: footer" />-->
 
+    <script>
+        /*$("#add-friends").click(function (e) {
+            var userIdFrom = "50";
+            var userIdTo = "90";
+            $.ajax({
+                type: "POST",
+                url: "/add-friends",
+                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo,
+                success: function success() {
+                    alert("Friend request has been sent successfully.");
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });*/
+
+        $("#add-friends").click(function (e) {
+            var userIdFrom = "50";
+            var userIdTo = "90";
+            var status = "FRIEND_REQUEST";
+            $.ajax({
+                type: "POST",
+                url: "/update-relationship",
+                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                success: function success() {
+                    alert("Updated relationship success.");
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });
+
+        $("#delete").click(function (e) {
+            var userIdFrom = "50";
+            var userIdTo = "90";
+            var status = "REMOVED_FROM_FRIENDS";
+            $.ajax({
+                type: "POST",
+                url: "/update-relationship",
+                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                success: function success() {
+                    alert("Updated relationship success.");
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });
+
+        $("#accept").click(function (e) {
+            var userIdFrom = "50";
+            var userIdTo = "90";
+            var status = "FRIENDS";
+            $.ajax({
+                type: "POST",
+                url: "/update-relationship",
+                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                success: function success() {
+                    alert("Updated relationship success.");
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });
+
+        $("#reject").click(function (e) {
+            var userIdFrom = "50";
+            var userIdTo = "90";
+            var status = "REQUEST_REJECTED";
+            $.ajax({
+                type: "POST",
+                url: "/update-relationship",
+                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                success: function success() {
+                    alert("Updated relationship success.");
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });
+    </script>
+
 </body>
-
-<style>
-    .left{
-        float: left;
-        width: 400px;
-        height: 480px;
-        /*border-style: solid;*/
-    }
-    .user-photo {
-        width: 100%;
-    }
-    .center{
-        display: inline-block;
-        margin-left: 140px;
-        width: 500px;
-        height: 600px;
-        /*border-style: solid;*/
-    }
-    .right {
-        display: inline-block;
-        float: right;
-        margin-right: 515px;
-        width: 200px;
-        height: 300px;
-        /*border-style: solid;*/
-    }
-    button {
-        width: 120px;
-        height: 50px;
-        border-radius: 5px;
-        font-size: large;
-        background-color: transparent;
-        border: 2px solid green;
-    }
-    .btn{
-        margin-top: 50px;
-        border: 2px solid blue;
-        /*border: 2px solid #f05a22;*/
-    }
-    .button {
-        margin-top: 25px;
-    }
-    .button_del {
-        margin-top: 25px;
-        border: 2px solid red;
-    }
-</style>
-
 </html>

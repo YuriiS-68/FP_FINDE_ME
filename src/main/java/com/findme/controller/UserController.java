@@ -77,11 +77,12 @@ public class UserController extends Utils<User> {
                 return new ResponseEntity<>("User registered success!", HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>("User with id " + user.getId() + " is not found.", HttpStatus.BAD_REQUEST);
+                System.out.println("Went to the else block.");
+                return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
             }
         }catch (InternalServerError e){
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (BadRequestException e) {
+        }catch (BadRequestException e) {
             return new ResponseEntity<>("This user can not registered.", HttpStatus.BAD_REQUEST);
         }
     }
@@ -99,28 +100,28 @@ public class UserController extends Utils<User> {
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ResponseEntity<String> loginUser(HttpSession session, @RequestParam(value = "email") String login,
                                             @RequestParam(value = "password") String pass) {
-        if (login == null || pass == null){
+        if (login == null || pass == null) {
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
         try {
             User user = userDAO.findUserByEmail(login);
-            if (user == null){
-                return new ResponseEntity<>("Login or password is correct.", HttpStatus.BAD_REQUEST);
+            if (user == null) {
+                return new ResponseEntity<>("Login or password is not correct.", HttpStatus.BAD_REQUEST);
             }
 
-            if (user.getEmail().equals(login) && user.getPassword().equals(pass)){
+            if (user.getEmail().equals(login) && user.getPassword().equals(pass)) {
                 session.setAttribute(user.getEmail(), user);
                 session.setMaxInactiveInterval(1800);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
-            else {
-                return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
+            else{
+                    return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
+                }
+            }catch(InternalServerError e){
+                return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }catch (InternalServerError e){
-            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
 
     @RequestMapping(path = "/logout-user", method = RequestMethod.GET)
     public ResponseEntity<String> logout(HttpSession session, @RequestParam(value = "email") String login){
@@ -132,7 +133,7 @@ public class UserController extends Utils<User> {
             User user = userDAO.findUserByEmail(login);
 
             if (user == null){
-                return new ResponseEntity<>("Login is correct.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Login is not correct.", HttpStatus.BAD_REQUEST);
             }
 
             if (session.getAttribute(user.getEmail()) != null){

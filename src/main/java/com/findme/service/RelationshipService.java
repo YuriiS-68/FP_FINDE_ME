@@ -26,6 +26,13 @@ public class RelationshipService {
         return relationship;
     }
 
+    public void update(Relationship relationship)throws BadRequestException{
+        if (relationship == null){
+            throw new BadRequestException("Relationship is not exist");
+        }
+        relationshipDAO.update(relationship);
+    }
+
     public void setRelationshipDAO(RelationshipDAO relationshipDAO) {
         this.relationshipDAO = relationshipDAO;
     }
