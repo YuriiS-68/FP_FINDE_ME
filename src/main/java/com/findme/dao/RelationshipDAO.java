@@ -14,8 +14,8 @@ import java.util.List;
 public class RelationshipDAO extends GeneralDAO<Relationship> {
 
     private static final String GET_RELATIONSHIP = "SELECT * FROM RELATIONSHIP WHERE ID_USER_FROM = ? AND ID_USER_TO = ?";
-    //private static final String GET_LIST_OUTCOME = "SELECT * FROM RELATIONSHIP WHERE ID_USER_FROM = ?";
-    //private static final String GET_LIST_INCOME = "SELECT * FROM RELATIONSHIP WHERE ID_USER_TO = ?";
+    private static final String GET_LIST_OUTCOME = "SELECT * FROM RELATIONSHIP WHERE ID_USER_FROM = ?";
+    private static final String GET_LIST_INCOME = "SELECT * FROM RELATIONSHIP WHERE ID_USER_TO = ?";
 
     @SuppressWarnings("unchecked")
     public Relationship getRelationship(Long idUserFrom, Long idUserTo)throws InternalServerError {
@@ -36,7 +36,8 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
         }
     }
 
-    /*@SuppressWarnings("unchecked")
+    //
+    @SuppressWarnings("unchecked")
     public List<Relationship> getOutcomeRelationships(String userId)throws InternalServerError{
         List<Relationship> relationshipList;
         NativeQuery<Relationship> query = (NativeQuery<Relationship>) getEntityManager().createNativeQuery(GET_LIST_OUTCOME, Relationship.class);
@@ -49,7 +50,7 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
         return relationshipList;
     }
 
-    @SuppressWarnings("unchecked")
+    /*@SuppressWarnings("unchecked")
     public List<Relationship> getIncomeRelationships(String userId)throws InternalServerError{
         List<Relationship> relationshipList;
         NativeQuery<Relationship> query = (NativeQuery<Relationship>) getEntityManager().createNativeQuery(GET_LIST_INCOME, Relationship.class);
@@ -61,5 +62,4 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
         }
         return relationshipList;
     }*/
-
 }

@@ -6,6 +6,8 @@ import com.findme.models.Relationship;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RelationshipService {
 
@@ -31,6 +33,22 @@ public class RelationshipService {
             throw new BadRequestException("Relationship is not exist");
         }
         relationshipDAO.update(relationship);
+    }
+
+    public List<Relationship> getIncomeRequests(String userId)throws BadRequestException{
+        if (userId == null){
+            throw new BadRequestException("Input data is wrong.");
+        }
+
+        return null;
+    }
+
+    public List<Relationship> getOutcomeRequests(String userId)throws BadRequestException{
+        if (userId == null){
+            throw new BadRequestException("Input data is wrong.");
+        }
+
+        return null;
     }
 
     public void setRelationshipDAO(RelationshipDAO relationshipDAO) {
