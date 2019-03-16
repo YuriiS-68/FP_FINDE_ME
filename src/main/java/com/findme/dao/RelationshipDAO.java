@@ -2,6 +2,7 @@ package com.findme.dao;
 
 import com.findme.exception.InternalServerError;
 import com.findme.models.Relationship;
+import com.findme.models.User;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,6 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
         }
     }
 
-    //
     @SuppressWarnings("unchecked")
     public List<Relationship> getOutcomeRelationships(String userId)throws InternalServerError{
         List<Relationship> relationshipList;

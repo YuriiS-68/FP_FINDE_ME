@@ -110,13 +110,19 @@ public class UserController extends Utils<User> {
                 return new ResponseEntity<>("Login or password is not correct.", HttpStatus.BAD_REQUEST);
             }
 
+            User userInSession = (User) session.getAttribute(String.valueOf(user.getId()));
+
+            if (userInSession != null){
+                return new ResponseEntity<>("User is already logged in.", HttpStatus.BAD_REQUEST);
+            }
+
             if (user.getEmail().equals(login) && user.getPassword().equals(pass)) {
-                session.setAttribute(user.getEmail(), user);
-                session.setMaxInactiveInterval(1800);
+                session.setAttribute(String.valueOf(user.getId()), user);
+                //session.setMaxInactiveInterval(1800);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
-            else{
-                    return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
+            else {
+                return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
                 }
             }catch(InternalServerError e){
                 return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -136,12 +142,12 @@ public class UserController extends Utils<User> {
                 return new ResponseEntity<>("Login is not correct.", HttpStatus.BAD_REQUEST);
             }
 
-            if (session.getAttribute(user.getEmail()) != null){
-                session.removeAttribute(user.getEmail());
+            if (session.getAttribute(String.valueOf(user.getId())) != null){
+                session.removeAttribute(String.valueOf(user.getId()));
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>("User with login " + user.getEmail() + " already logout.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("User with ID " + user.getId() + " already logged out.", HttpStatus.BAD_REQUEST);
             }
         }
         catch (InternalServerError e){

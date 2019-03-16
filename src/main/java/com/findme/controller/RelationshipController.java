@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class RelationshipController extends Utils<Relationship> {
@@ -48,14 +47,18 @@ public class RelationshipController extends Utils<Relationship> {
         long idUserTo = Long.parseLong(userIdTo);
 
         try {
+            User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
+            User userTo = userDAO.findById(idUserTo);
+
+            relationshipService.validationInputData(userTo, idUserFrom, idUserTo);
+
             Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
 
+            if (!relationshipService.getUserFromSession(session, userIdFrom).equals(userFrom)){
+                return new ResponseEntity<>("User with ID " + idUserFrom + " is not authorized.", HttpStatus.BAD_REQUEST);
+            }
+
             if (relationshipFind == null){
-                User userFrom = userDAO.findById(idUserFrom);
-                User userTo = userDAO.findById(idUserTo);
-
-                validationInputData(session,userFrom, userTo, idUserFrom, idUserTo);
-
                 Relationship relationship = new Relationship();
                 relationship.setUserFrom(userFrom);
                 relationship.setUserTo(userTo);
@@ -64,15 +67,22 @@ public class RelationshipController extends Utils<Relationship> {
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
-                return new ResponseEntity<>("Relationship between users already exist.", HttpStatus.BAD_REQUEST);
+                return relationshipService.sendFriendRequest(relationshipFind);
             }
         } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (BadRequestException e) {
+            System.err.println(e.getMessage());
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
         }
     }
 
+    //1. Получить userFrom из сессии, если юзера нет в сессии дальнейшие действия не возможны
+    //2. Получить userTo из базы, если userTo == null ошибка
+    //3. Получить из базы relationship
+    //4. Проверить есть ли userTo в сессии
+    //5. Если нету, то ошибка - юзер не залогинен
+    //6. Если есть, выполняю какое-то действие
     @RequestMapping(path = "/update-relationship", method = RequestMethod.POST)
     public ResponseEntity<String> updateRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo,
                                    @RequestParam String status){
@@ -80,132 +90,24 @@ public class RelationshipController extends Utils<Relationship> {
         long idUserTo = Long.parseLong(userIdTo);
 
         try {
-            User userFrom = userDAO.findById(idUserFrom);
+            User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
             User userTo = userDAO.findById(idUserTo);
-            Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
 
-            validationInputData(session, userFrom, userTo, idUserFrom, idUserTo);
-            validationInputDataForUpdate(session, relationshipFind, status, userTo, idUserTo);
+            relationshipService.validationInputData(userTo, idUserFrom, idUserTo);
 
-            return updateRelationshipByStatus(relationshipFind, status);
+            Relationship relationshipFind = relationshipService.getRelationshipBetweenUsers(idUserFrom, idUserTo);
 
+            if (relationshipService.getUserFromSession(session, userIdTo).equals(userTo) ||
+                    relationshipService.getUserFromSession(session, userIdFrom).equals(userFrom)){
+                return relationshipService.updateRelationshipByStatus(relationshipFind, status);
+            }
+            else {
+                return new ResponseEntity<>("User is not authorized.", HttpStatus.BAD_REQUEST);
+            }
         }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private ResponseEntity<String> updateRelationshipByStatus(Relationship relationshipFind, String status){
-        if (status.equals(RelationshipStatusType.FRIEND_REQUEST.toString())){
-            return sendFriendRequest(relationshipFind);
-        }
-
-        if (status.equals(RelationshipStatusType.REQUEST_REJECTED.toString())){
-            return requestRejected(relationshipFind);
-        }
-
-        if (status.equals(RelationshipStatusType.FRIENDS.toString())){
-            return addInFriends(relationshipFind);
-        }
-
-        if (status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
-            return deleteFromFriends(relationshipFind);
-        }
-        else {
-            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private ResponseEntity<String> addInFriends(Relationship relationshipFind){
-        try {
-            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST)){
-                relationshipFind.setStatusType(RelationshipStatusType.FRIENDS);
-                relationshipService.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-            }
         }catch (BadRequestException e) {
-            return new ResponseEntity<>("Could not add user as friend.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private ResponseEntity<String> sendFriendRequest(Relationship relationshipFind){
-        try {
-            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.REQUEST_REJECTED) ||
-                    relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.REMOVED_FROM_FRIENDS)){
-                relationshipFind.setStatusType(RelationshipStatusType.FRIEND_REQUEST);
-                relationshipService.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-            }
-        }catch (BadRequestException e) {
-            return new ResponseEntity<>("Failed to send friend request.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private ResponseEntity<String> deleteFromFriends(Relationship relationshipFind){
-        try {
-            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.FRIENDS)){
-                relationshipFind.setStatusType(RelationshipStatusType.REMOVED_FROM_FRIENDS);
-                relationshipService.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-            }
-        }catch (BadRequestException e) {
-            return new ResponseEntity<>("Could not remove user from friends.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private ResponseEntity<String> requestRejected(Relationship relationshipFind){
-        try {
-            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST)){
-                relationshipFind.setStatusType(RelationshipStatusType.REQUEST_REJECTED);
-                relationshipService.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-            }
-        }catch (BadRequestException e) {
-            return new ResponseEntity<>("The request was not canceled.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private ResponseEntity<String> validationInputData(HttpSession session, User userFrom, User userTo, long idUserFrom, long idUserTo){
-        if (idUserFrom == idUserTo){
-            return new ResponseEntity<>("Actions between the same user are not possible.", HttpStatus.BAD_REQUEST);
-        }
-
-        if (userTo == null){
-            return new ResponseEntity<>("User with ID " + idUserTo + " not found in the database.", HttpStatus.BAD_REQUEST);
-        }
-
-        if (userFrom == null){
-            return new ResponseEntity<>("User with ID " + idUserFrom + " not found in the database.", HttpStatus.BAD_REQUEST);
-        }
-
-        if (session.getAttribute(userFrom.getEmail()) == null) {
-            return new ResponseEntity<>("User with ID " + idUserFrom + " is not in the system.", HttpStatus.BAD_REQUEST);
-        }
-        else {
-            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private ResponseEntity<String> validationInputDataForUpdate(HttpSession session, Relationship relationshipFind, String status, User userTo, long idUserTo){
-        if (relationshipFind == null || status == null){
-            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-        }
-
-        if (session.getAttribute(userTo.getEmail()) == null) {
-            return new ResponseEntity<>("User with ID " + idUserTo + " is not in the system.", HttpStatus.BAD_REQUEST);
-        }
-        else {
+            System.err.println(e.getMessage());
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
         }
     }
@@ -217,25 +119,34 @@ public class RelationshipController extends Utils<Relationship> {
         return null;
     }
 
+    //Получить список отправленных заявок
+    //у relationship есть колонка с id получателя заявки
+    //надо по этому айдишнику получить имя и фамилию пользователя из таблицы User
+    //соединить их в одну строку
+    //создать мапу и ложить в неё ключ - id, value - строка из имени и фамилии
     @RequestMapping(path = "/outcome-requests", method = RequestMethod.GET)
-    public List<String> getOutcomeRequests(@RequestParam String userId){
-        List<Relationship> relationshipList;
-        List<String> outcomeRequests = new ArrayList<>();
-        String relationshipOutcome;
+    public Map<Long, String> getOutcomeRequests(@RequestParam String userId) throws InternalServerError {
+        long inputUserId = Long.parseLong(userId);
+        Map<Long, String> outcomeRequests = new HashMap<>();
+        StringBuilder fullNameUser = new StringBuilder();
 
         try {
-            relationshipList = relationshipService.getOutcomeRequests(userId);
-            for (Relationship relationship : relationshipList){
-                if (relationship != null && relationship.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST)){
-                    relationshipOutcome = relationship.getStatusType().toString();
-                    outcomeRequests.add(relationshipOutcome);
+            if (!userDAO.getUsersTo(inputUserId).isEmpty()){
+                for (User user : userDAO.getUsersTo(inputUserId)){
+                    if (user != null){
+                        outcomeRequests.put(user.getId(), fullNameUser.append(user.getFirstName()).append(user.getLastName()).toString());
+                    }
                 }
+                System.out.println("Map with requests - " + outcomeRequests);
+                return outcomeRequests;
             }
-        } catch (BadRequestException e) {
-            e.printStackTrace();
+            else {
+                System.out.println("Empty map - " + outcomeRequests);
+                return outcomeRequests;
+            }
+        }catch (InternalServerError e) {
+            throw new InternalServerError("Something went wrong...");
         }
-
-        return outcomeRequests;
     }
 
     public void setRelationshipService(RelationshipService relationshipService) {

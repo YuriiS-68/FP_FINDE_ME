@@ -103,7 +103,7 @@
 <!--<div th:replace="fragments/footer :: footer" />-->
 
     <script>
-        /*$("#add-friends").click(function (e) {
+        $("#add-friends").click(function (e) {
             var userIdFrom = "50";
             var userIdTo = "90";
             $.ajax({
@@ -112,24 +112,6 @@
                 data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo,
                 success: function success() {
                     alert("Friend request has been sent successfully.");
-                },
-                error: function error(xhr, status, errorThrown) {
-                    alert("Failed to exit with: " + status + "." + errorThrown);
-                }
-            });
-            e.preventDefault();
-        });*/
-
-        $("#add-friends").click(function (e) {
-            var userIdFrom = "50";
-            var userIdTo = "90";
-            var status = "FRIEND_REQUEST";
-            $.ajax({
-                type: "POST",
-                url: "/update-relationship",
-                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
-                success: function success() {
-                    alert("Updated relationship success.");
                 },
                 error: function error(xhr, status, errorThrown) {
                     alert("Failed to exit with: " + status + "." + errorThrown);
