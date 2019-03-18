@@ -104,7 +104,7 @@ public class RelationshipController extends Utils<Relationship> {
             Relationship relationshipFind = relationshipService.getRelationshipBetweenUsers(idUserFrom, idUserTo);
 
             if (userFrom == null && relationshipService.getUserFromSession(session, userIdTo) == null){
-                return new ResponseEntity<>("User with ID " + idUserFrom + " is not authorized.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Users is not authorized.", HttpStatus.BAD_REQUEST);
             }
 
             if (relationshipService.getUserFromSession(session, userIdTo) != null || userFrom != null){
