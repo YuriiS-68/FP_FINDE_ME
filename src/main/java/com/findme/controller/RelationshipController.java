@@ -35,16 +35,22 @@ public class RelationshipController extends Utils<Relationship> {
 
     //юзер отправивший запрос на добавление в друзья может:
     //1. отправить запрос на добавление в друзья, статус Запрос отправлен
-    //2. отменить свой запрос, если он не был ещё принят, тогда статус меняется на Запрос отклонён
+    //2. отменить свой запрос, если он не был ещё принят, статус Запрос отправлен, тогда статус меняется на Запрос отклонён
+    //3. удалить из друзей, статус Друзья, меняется на Удалён из друзей
     //юзер получивший запрос может:
-    //1. отменить запрос, тогда статус меняется на Запрос отклонён
-    //2. принять запрос, тогда статус меняется на Друзья
-    //3. удалить из друзей, тогда статус меняется на Удалён из друзей
+    //1. отменить запрос, статус Запрос отправлен, тогда статус меняется на Запрос отклонён
+    //2. принять запрос, статус Запрос отправлен, тогда статус меняется на Друзья
+    //3. удалить из друзей, статус Друзья, тогда статус меняется на Удалён из друзей
 
     @RequestMapping(path = "/add-friends", method = RequestMethod.POST)
     public ResponseEntity<String> addRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo){
         long idUserFrom = Long.parseLong(userIdFrom);
         long idUserTo = Long.parseLong(userIdTo);
+
+        //получить userFrom из сессии
+        //получить userTo из базы
+        //сделать валидацию
+        //получить relationship между юзерами
 
         try {
             User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
@@ -54,7 +60,7 @@ public class RelationshipController extends Utils<Relationship> {
 
             Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
 
-            if (!relationshipService.getUserFromSession(session, userIdFrom).equals(userFrom)){
+            if (userFrom == null){
                 return new ResponseEntity<>("User with ID " + idUserFrom + " is not authorized.", HttpStatus.BAD_REQUEST);
             }
 
@@ -97,12 +103,15 @@ public class RelationshipController extends Utils<Relationship> {
 
             Relationship relationshipFind = relationshipService.getRelationshipBetweenUsers(idUserFrom, idUserTo);
 
-            if (relationshipService.getUserFromSession(session, userIdTo).equals(userTo) ||
-                    relationshipService.getUserFromSession(session, userIdFrom).equals(userFrom)){
-                return relationshipService.updateRelationshipByStatus(relationshipFind, status);
+            if (userFrom == null && relationshipService.getUserFromSession(session, userIdTo) == null){
+                return new ResponseEntity<>("User with ID " + idUserFrom + " is not authorized.", HttpStatus.BAD_REQUEST);
+            }
+
+            if (relationshipService.getUserFromSession(session, userIdTo) != null || userFrom != null){
+                return relationshipService.updateRelationshipByStatus(relationshipFind, status, userIdTo, session);
             }
             else {
-                return new ResponseEntity<>("User is not authorized.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Something went wrong...", HttpStatus.BAD_REQUEST);
             }
         }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);

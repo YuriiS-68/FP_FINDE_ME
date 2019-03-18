@@ -49,16 +49,22 @@ public class RelationshipService {
         return relationshipDAO.getRelationship(userFrom, userTo);
     }
 
-    public ResponseEntity<String> updateRelationshipByStatus(Relationship relationshipFind, String status){
+    public ResponseEntity<String> updateRelationshipByStatus(Relationship relationshipFind, String status, String userIdTo, HttpSession session){
         if (relationshipFind == null || status == null){
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
         }
 
         try {
-            if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString())){
+            if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString()) &&
+                    getUserFromSession(session, userIdTo) != null){
                 relationshipFind.setStatusType(RelationshipStatusType.FRIENDS);
                 update(relationshipFind);
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+
+            if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString()) &&
+                    getUserFromSession(session, userIdTo) == null){
+                return new ResponseEntity<>("Unable to be friends with yourself.", HttpStatus.BAD_REQUEST);
             }
 
             if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIENDS) && status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
@@ -115,7 +121,10 @@ public class RelationshipService {
         }
     }
 
-    public User getUserFromSession(HttpSession session, String userIdFrom){
+    public User getUserFromSession(HttpSession session, String userIdFrom)throws BadRequestException{
+        if (userIdFrom == null || session == null){
+            throw  new BadRequestException("Something is wrong with the input.");
+        }
         return (User) session.getAttribute(userIdFrom);
     }
 
