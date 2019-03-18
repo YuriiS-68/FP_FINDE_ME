@@ -47,11 +47,6 @@ public class RelationshipController extends Utils<Relationship> {
         long idUserFrom = Long.parseLong(userIdFrom);
         long idUserTo = Long.parseLong(userIdTo);
 
-        //получить userFrom из сессии
-        //получить userTo из базы
-        //сделать валидацию
-        //получить relationship между юзерами
-
         try {
             User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
             User userTo = userDAO.findById(idUserTo);
@@ -83,12 +78,6 @@ public class RelationshipController extends Utils<Relationship> {
         }
     }
 
-    //1. Получить userFrom из сессии, если юзера нет в сессии дальнейшие действия не возможны
-    //2. Получить userTo из базы, если userTo == null ошибка
-    //3. Получить из базы relationship
-    //4. Проверить есть ли userTo в сессии
-    //5. Если нету, то ошибка - юзер не залогинен
-    //6. Если есть, выполняю какое-то действие
     @RequestMapping(path = "/update-relationship", method = RequestMethod.POST)
     public ResponseEntity<String> updateRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo,
                                    @RequestParam String status){
