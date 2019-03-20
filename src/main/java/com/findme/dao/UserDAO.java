@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import java.util.List;
-import java.util.Set;
 
 @Repository("userDAO")
 @Transactional
@@ -53,30 +52,21 @@ public class UserDAO extends GeneralDAO<User> {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<User> getUsersTo(long idUserFrom)throws InternalServerError{
-        Set<User> users;
-        NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(GET_USERS_TO, User.class);
-
+    public List<User> getUsers(long userId, String word)throws InternalServerError {
+        List<User> users;
         try {
-            users = (Set<User>) query.setParameter(1, idUserFrom).getResultList();
+            if (word.equals("income")) {
+                NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(GET_USERS_FROM, User.class);
+                users = query.setParameter(1, userId).getResultList();
+                return users;
+            } else {
+                NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(GET_USERS_TO, User.class);
+                users = query.setParameter(1, userId).getResultList();
+                return users;
+            }
         }catch (NoResultException e){
             System.err.println(e.getMessage());
             throw e;
         }
-        return users;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Set<User> getUsersFrom(long idUserFrom)throws InternalServerError{
-        Set<User> users;
-        NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(GET_USERS_FROM, User.class);
-
-        try {
-            users = (Set<User>) query.setParameter(1, idUserFrom).getResultList();
-        }catch (NoResultException e){
-            System.err.println(e.getMessage());
-            throw e;
-        }
-        return users;
     }
 }

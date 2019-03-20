@@ -7,6 +7,8 @@ import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -39,6 +41,39 @@ public class UserService {
             throw new BadRequestException("The ID entered does not exist");
         }
         userDAO.delete(id);
+    }
+
+    public List<User> getIncomeRequests(String userId)throws BadRequestException, InternalServerError{
+        if (userId == null){
+            throw new BadRequestException("Input data is wrong.");
+        }
+
+        String word = "income";
+        return findListUsers(userId, word);
+    }
+
+    public List<User> getOutcomeRequests(String userId)throws BadRequestException, InternalServerError{
+        if (userId == null){
+            throw new BadRequestException("Input data is wrong.");
+        }
+
+        String word = "outcome";
+        return findListUsers(userId, word);
+    }
+
+    private List<User> findListUsers(String userId, String word) throws BadRequestException, InternalServerError {
+        if (userId == null || word == null){
+            throw new BadRequestException("Input data is wrong.");
+        }
+
+        List<User> users;
+        try {
+            users = userDAO.getUsers(Long.parseLong(userId), word);
+        } catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            throw e;
+        }
+        return users;
     }
 
     public void setUserDAO(UserDAO userDAO) {

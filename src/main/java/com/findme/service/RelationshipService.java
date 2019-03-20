@@ -1,7 +1,6 @@
 package com.findme.service;
 
 import com.findme.dao.RelationshipDAO;
-import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
 import com.findme.models.Relationship;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 @Service
 public class RelationshipService {
@@ -126,22 +124,6 @@ public class RelationshipService {
             throw  new BadRequestException("Something is wrong with the input.");
         }
         return (User) session.getAttribute(userIdFrom);
-    }
-
-    public List<Relationship> getIncomeRequests(String userId)throws BadRequestException{
-        if (userId == null){
-            throw new BadRequestException("Input data is wrong.");
-        }
-
-        return null;
-    }
-
-    public List<Relationship> getOutcomeRequests(String userId)throws BadRequestException{
-        if (userId == null){
-            throw new BadRequestException("Input data is wrong.");
-        }
-
-        return null;
     }
 
     public void setRelationshipDAO(RelationshipDAO relationshipDAO) {

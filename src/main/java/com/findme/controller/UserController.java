@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class UserController extends Utils<User> {
@@ -152,6 +153,32 @@ public class UserController extends Utils<User> {
         }
         catch (InternalServerError e){
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/income-requests", method = RequestMethod.GET)
+    public List<User> getIncomeRequests(String userId)throws BadRequestException, InternalServerError{
+        try {
+            return userService.getIncomeRequests(userId);
+        } catch (BadRequestException e) {
+            System.err.println(e.getMessage());
+            throw new BadRequestException("Something is wrong with the input.");
+        }catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            throw  new InternalServerError("Something went wrong...");
+        }
+    }
+
+    @RequestMapping(path = "/outcome-requests", method = RequestMethod.GET)
+    public List<User> getOutcomeRequests(String userId) throws BadRequestException, InternalServerError {
+        try {
+            return userService.getOutcomeRequests(userId);
+        } catch (BadRequestException e) {
+            System.err.println(e.getMessage());
+            throw new BadRequestException("Something is wrong with the input.");
+        }catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            throw  new InternalServerError("Something went wrong...");
         }
     }
 

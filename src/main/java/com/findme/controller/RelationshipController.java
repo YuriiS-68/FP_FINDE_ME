@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.util.*;
 
 @Controller
 public class RelationshipController extends Utils<Relationship> {
@@ -107,43 +106,6 @@ public class RelationshipController extends Utils<Relationship> {
         }catch (BadRequestException e) {
             System.err.println(e.getMessage());
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @RequestMapping(path = "/income-requests", method = RequestMethod.GET)
-    public List<Relationship> getIncomeRequests(@RequestParam String userId){
-
-
-        return null;
-    }
-
-    //Получить список отправленных заявок
-    //у relationship есть колонка с id получателя заявки
-    //надо по этому айдишнику получить имя и фамилию пользователя из таблицы User
-    //соединить их в одну строку
-    //создать мапу и ложить в неё ключ - id, value - строка из имени и фамилии
-    @RequestMapping(path = "/outcome-requests", method = RequestMethod.GET)
-    public Map<Long, String> getOutcomeRequests(@RequestParam String userId) throws InternalServerError {
-        long inputUserId = Long.parseLong(userId);
-        Map<Long, String> outcomeRequests = new HashMap<>();
-        StringBuilder fullNameUser = new StringBuilder();
-
-        try {
-            if (!userDAO.getUsersTo(inputUserId).isEmpty()){
-                for (User user : userDAO.getUsersTo(inputUserId)){
-                    if (user != null){
-                        outcomeRequests.put(user.getId(), fullNameUser.append(user.getFirstName()).append(user.getLastName()).toString());
-                    }
-                }
-                System.out.println("Map with requests - " + outcomeRequests);
-                return outcomeRequests;
-            }
-            else {
-                System.out.println("Empty map - " + outcomeRequests);
-                return outcomeRequests;
-            }
-        }catch (InternalServerError e) {
-            throw new InternalServerError("Something went wrong...");
         }
     }
 
