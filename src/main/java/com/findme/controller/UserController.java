@@ -159,6 +159,7 @@ public class UserController extends Utils<User> {
     @RequestMapping(path = "/income-requests", method = RequestMethod.GET)
     public List<User> getIncomeRequests(String userId)throws BadRequestException, InternalServerError{
         try {
+            System.out.println("List users - " + userService.getIncomeRequests(userId));
             return userService.getIncomeRequests(userId);
         } catch (BadRequestException e) {
             System.err.println(e.getMessage());
@@ -172,6 +173,7 @@ public class UserController extends Utils<User> {
     @RequestMapping(path = "/outcome-requests", method = RequestMethod.GET)
     public List<User> getOutcomeRequests(String userId) throws BadRequestException, InternalServerError {
         try {
+            System.out.println("List users - " + userService.getIncomeRequests(userId));
             return userService.getOutcomeRequests(userId);
         } catch (BadRequestException e) {
             System.err.println(e.getMessage());

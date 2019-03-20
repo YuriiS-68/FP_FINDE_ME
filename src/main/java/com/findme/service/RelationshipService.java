@@ -33,13 +33,6 @@ public class RelationshipService {
         return relationship;
     }
 
-    private void update(Relationship relationship)throws BadRequestException{
-        if (relationship == null){
-            throw new BadRequestException("Relationship is not exist");
-        }
-        relationshipDAO.update(relationship);
-    }
-
     public Relationship getRelationshipBetweenUsers(Long userFrom, Long userTo) throws InternalServerError, BadRequestException {
         if (userFrom == null || userTo == null){
             throw new BadRequestException("Input data is wrong.");
@@ -105,17 +98,23 @@ public class RelationshipService {
         }
     }
 
-    public void validationInputData(User userTo, Long idUserFrom, Long idUserTo)throws BadRequestException{
-        if (idUserFrom == null || idUserTo == null){
-            throw  new BadRequestException("Something is wrong with the input.");
-        }
+    public void validationForAdd(User userFrom, User userTo, Long idUserFrom, Long idUserTo)throws BadRequestException{
+        validationInputData(idUserFrom, idUserTo);
 
-        if (idUserFrom.equals(idUserTo)){
-            throw  new BadRequestException("Actions between the same user are not possible.");
+        if (userFrom == null){
+            throw  new BadRequestException("User with ID " + idUserFrom + " is not authorized.");
         }
 
         if (userTo == null){
             throw  new BadRequestException("User with ID " + idUserTo + " not found in the database.");
+        }
+    }
+
+    public void validationForUpdate(Long idUserFrom, Long idUserTo, User userFrom, User userTo)throws BadRequestException{
+        validationInputData(idUserFrom, idUserTo);
+
+        if (userFrom == null && userTo == null){
+            throw  new BadRequestException("Users is not authorized.");
         }
     }
 
@@ -128,5 +127,22 @@ public class RelationshipService {
 
     public void setRelationshipDAO(RelationshipDAO relationshipDAO) {
         this.relationshipDAO = relationshipDAO;
+    }
+
+    private void validationInputData(Long idUserFrom, Long idUserTo)throws BadRequestException{
+        if (idUserFrom == null || idUserTo == null){
+            throw  new BadRequestException("Something is wrong with the input.");
+        }
+
+        if (idUserFrom.equals(idUserTo)){
+            throw  new BadRequestException("Actions between the same user are not possible.");
+        }
+    }
+
+    private void update(Relationship relationship)throws BadRequestException{
+        if (relationship == null){
+            throw new BadRequestException("Relationship is not exist");
+        }
+        relationshipDAO.update(relationship);
     }
 }

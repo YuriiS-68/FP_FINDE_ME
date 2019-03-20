@@ -50,13 +50,9 @@ public class RelationshipController extends Utils<Relationship> {
             User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
             User userTo = userDAO.findById(idUserTo);
 
-            relationshipService.validationInputData(userTo, idUserFrom, idUserTo);
+            relationshipService.validationForAdd(userFrom, userTo, idUserFrom, idUserTo);
 
             Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
-
-            if (userFrom == null){
-                return new ResponseEntity<>("User with ID " + idUserFrom + " is not authorized.", HttpStatus.BAD_REQUEST);
-            }
 
             if (relationshipFind == null){
                 Relationship relationship = new Relationship();
@@ -85,15 +81,11 @@ public class RelationshipController extends Utils<Relationship> {
 
         try {
             User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
-            User userTo = userDAO.findById(idUserTo);
+            User userTo = relationshipService.getUserFromSession(session, userIdTo);
 
-            relationshipService.validationInputData(userTo, idUserFrom, idUserTo);
+            relationshipService.validationForUpdate(idUserFrom, idUserTo, userFrom, userTo);
 
             Relationship relationshipFind = relationshipService.getRelationshipBetweenUsers(idUserFrom, idUserTo);
-
-            if (userFrom == null && relationshipService.getUserFromSession(session, userIdTo) == null){
-                return new ResponseEntity<>("Users is not authorized.", HttpStatus.BAD_REQUEST);
-            }
 
             if (relationshipService.getUserFromSession(session, userIdTo) != null || userFrom != null){
                 return relationshipService.updateRelationshipByStatus(relationshipFind, status, userIdTo, session);
