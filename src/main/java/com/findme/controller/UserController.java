@@ -195,7 +195,7 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/updateUser", produces = "text/plain")
     public @ResponseBody
-    String update(HttpServletRequest req)throws IOException, BadRequestException, InternalServerError{
+    String update(HttpServletRequest req)throws IOException, BadRequestException{
         User user = mappingObject(req);
         long inputId = Long.parseLong(req.getParameter("userId"));
 
@@ -206,29 +206,34 @@ public class UserController extends Utils<User> {
             else {
                 userService.update(user);
             }
-        }catch (BadRequestException e){
+        } catch (BadRequestException e){
             System.err.println(e.getMessage());
             throw  e;
+        } catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            return "Something went wrong...";
         }
         return "User update success";
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteUser", produces = "text/plain")
     public @ResponseBody
-    String delete(HttpServletRequest req)throws BadRequestException, InternalServerError{
-        User user = userDAO.findById(Long.parseLong(req.getParameter("userId")));
-        long userId = Long.parseLong(req.getParameter("userId"));
-
+    String delete(HttpServletRequest req)throws BadRequestException{
         try {
+            User user = userDAO.findById(Long.parseLong(req.getParameter("userId")));
+            long userId = Long.parseLong(req.getParameter("userId"));
             if (user == null){
                 return "The User with ID " + userId + " does not exist in the DB.";
             }
             else {
                 userService.delete(user.getId());
             }
-        }catch (BadRequestException e){
+        } catch (BadRequestException e){
             System.err.println(e.getMessage());
             throw e;
+        } catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            return "Something went wrong...";
         }
         return "User deleted success";
     }

@@ -27,7 +27,7 @@ public class PostService {
         return post;
     }
 
-    public void update(Post post)throws BadRequestException{
+    public void update(Post post)throws BadRequestException, InternalServerError{
         if (post == null){
             throw new BadRequestException("Post is not exist");
         }

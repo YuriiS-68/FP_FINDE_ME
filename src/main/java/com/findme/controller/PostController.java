@@ -43,7 +43,7 @@ public class PostController extends Utils<Post> {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/updatePost", produces = "text/plain")
     public @ResponseBody
-    String update(HttpServletRequest req)throws IOException, BadRequestException, InternalServerError {
+    String update(HttpServletRequest req)throws IOException, BadRequestException {
         Post post = mappingObject(req);
         long inputId = Long.parseLong(req.getParameter("postId"));
 
@@ -57,26 +57,31 @@ public class PostController extends Utils<Post> {
         }catch (BadRequestException e){
             System.err.println(e.getMessage());
             throw  e;
+        } catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            return "Something went wrong...";
         }
         return "User update success";
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/deletePost", produces = "text/plain")
     public @ResponseBody
-    String delete(HttpServletRequest req)throws BadRequestException, InternalServerError {
-        Post post = postDAO.findById(Long.parseLong(req.getParameter("postId")));
-        long postId = Long.parseLong(req.getParameter("postId"));
-
+    String delete(HttpServletRequest req)throws BadRequestException {
         try {
+            Post post = postDAO.findById(Long.parseLong(req.getParameter("postId")));
+            long postId = Long.parseLong(req.getParameter("postId"));
             if (post == null){
                 return "The Post with ID " + postId + " does not exist in the DB.";
             }
             else {
                 postService.delete(post.getId());
             }
-        }catch (BadRequestException e){
+        } catch (BadRequestException e){
             System.err.println(e.getMessage());
             throw e;
+        } catch (InternalServerError e) {
+            System.err.println(e.getMessage());
+            return "Something went wrong...";
         }
         return "User deleted success";
     }

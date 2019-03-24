@@ -29,7 +29,7 @@ public class UserService {
         return user;
     }
 
-    public void update(User user)throws BadRequestException{
+    public void update(User user)throws BadRequestException, InternalServerError{
         if (user == null){
             throw new BadRequestException("User is not exist");
         }
