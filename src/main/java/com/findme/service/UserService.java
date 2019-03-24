@@ -75,8 +75,4 @@ public class UserService {
         }
         return users;
     }
-
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
 }

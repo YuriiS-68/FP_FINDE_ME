@@ -1,5 +1,6 @@
 package com.findme.dao;
 
+import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
 import com.findme.models.User;
 import org.hibernate.query.NativeQuery;
@@ -18,7 +19,7 @@ public class UserDAO extends GeneralDAO<User> {
     private static final String GET_USERS_TO = "SELECT * FROM USERS1 JOIN RELATIONSHIP ON RELATIONSHIP.ID_USER_TO = USERS1.USER_ID" +
             " WHERE ID_USER_FROM = ? AND STATUS_TYPE = 'FRIEND_REQUEST'";
     private static final String GET_USERS_FROM = "SELECT * FROM USERS1 JOIN RELATIONSHIP ON RELATIONSHIP.ID_USER_FROM = USERS1.USER_ID" +
-            " WHERE ID_USER_FROM = ? AND STATUS_TYPE = 'FRIEND_REQUEST'";
+            " WHERE ID_USER_TO = ? AND STATUS_TYPE = 'FRIEND_REQUEST'";
 
     @SuppressWarnings("unchecked")
     public boolean findUserByFields(User user) throws InternalServerError {
@@ -52,17 +53,21 @@ public class UserDAO extends GeneralDAO<User> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<User> getUsers(long userId, String word)throws InternalServerError {
+    public List<User> getUsers(long userId, String word)throws BadRequestException, InternalServerError {
         List<User> users;
         try {
             if (word.equals("income")) {
                 NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(GET_USERS_FROM, User.class);
                 users = query.setParameter(1, userId).getResultList();
                 return users;
-            } else {
+            }
+            else if(word.equals("outcome")) {
                 NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(GET_USERS_TO, User.class);
                 users = query.setParameter(1, userId).getResultList();
                 return users;
+            }
+            else {
+                throw  new BadRequestException("Something went wrong.");
             }
         }catch (NoResultException e){
             System.err.println(e.getMessage());

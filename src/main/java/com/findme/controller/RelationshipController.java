@@ -50,7 +50,11 @@ public class RelationshipController extends Utils<Relationship> {
             User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
             User userTo = userDAO.findById(idUserTo);
 
-            relationshipService.validationForAdd(userFrom, userTo, idUserFrom, idUserTo);
+            if (userTo == null || userFrom == null) {
+                return new ResponseEntity<>("Users is not found.", HttpStatus.BAD_REQUEST);
+            }
+
+            relationshipService.validationInputData(idUserFrom, idUserTo);
 
             Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
 
@@ -83,9 +87,13 @@ public class RelationshipController extends Utils<Relationship> {
             User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
             User userTo = relationshipService.getUserFromSession(session, userIdTo);
 
-            relationshipService.validationForUpdate(idUserFrom, idUserTo, userFrom, userTo);
+            relationshipService.validationInputData(idUserFrom, idUserTo);
 
-            Relationship relationshipFind = relationshipService.getRelationshipBetweenUsers(idUserFrom, idUserTo);
+            if (userTo == null && userFrom == null) {
+                return new ResponseEntity<>("Users is not authorized.", HttpStatus.BAD_REQUEST);
+            }
+
+            Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
 
             if (relationshipService.getUserFromSession(session, userIdTo) != null || userFrom != null){
                 return relationshipService.updateRelationshipByStatus(relationshipFind, status, userIdTo, session);
@@ -99,17 +107,5 @@ public class RelationshipController extends Utils<Relationship> {
             System.err.println(e.getMessage());
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
         }
-    }
-
-    public void setRelationshipService(RelationshipService relationshipService) {
-        this.relationshipService = relationshipService;
-    }
-
-    public void setRelationshipDAO(RelationshipDAO relationshipDAO) {
-        this.relationshipDAO = relationshipDAO;
-    }
-
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
     }
 }

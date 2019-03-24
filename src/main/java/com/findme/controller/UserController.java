@@ -3,10 +3,7 @@ package com.findme.controller;
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
-import com.findme.models.Relationship;
-import com.findme.models.RelationshipStatusType;
 import com.findme.models.User;
-import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,13 +23,11 @@ public class UserController extends Utils<User> {
 
     private UserService userService;
     private UserDAO userDAO;
-    private RelationshipService relationshipService;
 
     @Autowired
-    public UserController(UserService userService, UserDAO userDAO, RelationshipService relationshipService) {
+    public UserController(UserService userService, UserDAO userDAO) {
         this.userService = userService;
         this.userDAO = userDAO;
-        this.relationshipService = relationshipService;
     }
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
@@ -119,7 +114,6 @@ public class UserController extends Utils<User> {
 
             if (user.getEmail().equals(login) && user.getPassword().equals(pass)) {
                 session.setAttribute(String.valueOf(user.getId()), user);
-                //session.setMaxInactiveInterval(1800);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {
@@ -158,9 +152,10 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/income-requests", method = RequestMethod.GET)
     public List<User> getIncomeRequests(String userId)throws BadRequestException, InternalServerError{
+        List<User> users;
         try {
-            System.out.println("List users - " + userService.getIncomeRequests(userId));
-            return userService.getIncomeRequests(userId);
+            users = userService.getIncomeRequests(userId);
+            return users;
         } catch (BadRequestException e) {
             System.err.println(e.getMessage());
             throw new BadRequestException("Something is wrong with the input.");
@@ -172,9 +167,10 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/outcome-requests", method = RequestMethod.GET)
     public List<User> getOutcomeRequests(String userId) throws BadRequestException, InternalServerError {
+        List<User> users;
         try {
-            System.out.println("List users - " + userService.getIncomeRequests(userId));
-            return userService.getOutcomeRequests(userId);
+            users = userService.getOutcomeRequests(userId);
+            return users;
         } catch (BadRequestException e) {
             System.err.println(e.getMessage());
             throw new BadRequestException("Something is wrong with the input.");
@@ -235,17 +231,5 @@ public class UserController extends Utils<User> {
             throw e;
         }
         return "User deleted success";
-    }
-
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    public void setUserDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
-
-    public void setRelationshipService(RelationshipService relationshipService) {
-        this.relationshipService = relationshipService;
     }
 }

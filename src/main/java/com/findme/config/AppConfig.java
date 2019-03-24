@@ -48,8 +48,8 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public UserService userService(){
-        UserService userService = new UserService(userDAO());
-        userService.setUserDAO(userDAO());
+        UserService userService;
+        userService = new UserService(userDAO());
         return userService;
     }
 
@@ -60,8 +60,8 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public PostService postService(){
-        PostService postService = new PostService(postDAO());
-        postService.setPostDAO(postDAO());
+        PostService postService;
+        postService = new PostService(postDAO());
         return postService;
     }
 
@@ -72,8 +72,8 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public RelationshipService relationshipService(){
-        RelationshipService relationshipService = new RelationshipService(relationshipDAO());
-        relationshipService.setRelationshipDAO(relationshipDAO());
+        RelationshipService relationshipService;
+        relationshipService = new RelationshipService(relationshipDAO());
         return relationshipService;
     }
 

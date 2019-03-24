@@ -80,12 +80,4 @@ public class PostController extends Utils<Post> {
         }
         return "User deleted success";
     }
-
-    public void setPostService(PostService postService) {
-        this.postService = postService;
-    }
-
-    public void setPostDAO(PostDAO postDAO) {
-        this.postDAO = postDAO;
-    }
 }

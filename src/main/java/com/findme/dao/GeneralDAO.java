@@ -28,7 +28,7 @@ public abstract class GeneralDAO<T extends IdEntity> implements GenericEntityDAO
         return entity;
     }
 
-    public void update(T t){
+    public void update(T t)throws InternalServerError{
         entityManager.merge(t);
     }
 

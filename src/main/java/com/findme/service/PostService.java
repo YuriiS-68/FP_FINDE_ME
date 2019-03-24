@@ -40,8 +40,4 @@ public class PostService {
         }
         postDAO.delete(id);
     }
-
-    public void setPostDAO(PostDAO postDAO) {
-        this.postDAO = postDAO;
-    }
 }
