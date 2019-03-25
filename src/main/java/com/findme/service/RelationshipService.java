@@ -33,7 +33,7 @@ public class RelationshipService {
         return relationship;
     }
 
-    public ResponseEntity<String> updateRelationshipByStatus(Relationship relationshipFind, String status, String userIdTo, HttpSession session){
+    public ResponseEntity<String> updateRelationshipByStatus(Relationship relationshipFind, String status, String userIdTo, HttpSession session)throws BadRequestException{
         if (relationshipFind == null || status == null){
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
         }
@@ -41,10 +41,16 @@ public class RelationshipService {
         try {
             if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString()) &&
                     getUserFromSession(session, userIdTo) != null){
-                validStatusAcceptRequest(status);
                 relationshipFind.setStatusType(RelationshipStatusType.FRIENDS);
                 relationshipDAO.update(relationshipFind);
                 return new ResponseEntity<>(HttpStatus.OK);
+            }
+            else if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIENDS) && status.equals(RelationshipStatusType.FRIENDS.toString()) &&
+                    getUserFromSession(session, userIdTo) != null){
+                throw new BadRequestException("You are already friends.");
+            }
+            else if (!relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString())){
+                throw new BadRequestException("Action is impossible. The status between users must be " + RelationshipStatusType.FRIEND_REQUEST + ".");
             }
 
             if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString()) &&
@@ -53,25 +59,33 @@ public class RelationshipService {
             }
 
             if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIENDS) && status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
-                validStatusRemoved(status);
                 relationshipFind.setStatusType(RelationshipStatusType.REMOVED_FROM_FRIENDS);
                 relationshipDAO.update(relationshipFind);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            else if (relationshipFind.getStatusType().equals(RelationshipStatusType.REMOVED_FROM_FRIENDS) && status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
+                throw new BadRequestException("You have already deleted a user from friends.");
+            }
+            else if (!relationshipFind.getStatusType().equals(RelationshipStatusType.FRIENDS) && status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
+                throw new BadRequestException("Action is impossible. The status between users must be " + RelationshipStatusType.FRIENDS + ".");
+            }
 
             if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.REQUEST_REJECTED.toString())){
-                validStatusCancelRequest(status);
                 relationshipFind.setStatusType(RelationshipStatusType.REQUEST_REJECTED);
                 relationshipDAO.update(relationshipFind);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
+            else if (relationshipFind.getStatusType().equals(RelationshipStatusType.REQUEST_REJECTED) && status.equals(RelationshipStatusType.REQUEST_REJECTED.toString())){
+                throw new BadRequestException("You have already rejected a friend request.");
+            }
+            else if (!relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.REQUEST_REJECTED.toString())){
+                throw new BadRequestException("Action is impossible. The status between users must be " + RelationshipStatusType.FRIEND_REQUEST + ".");
+            }
             else {
                 return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
             }
-        } catch (InternalServerError e) {
+        }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (BadRequestException e) {
-            return new ResponseEntity<>("Could not add user as friend.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -109,24 +123,6 @@ public class RelationshipService {
 
         if (idUserFrom.equals(idUserTo)){
             throw  new BadRequestException("Actions between the same user are not possible.");
-        }
-    }
-
-    private void validStatusAcceptRequest(String status)throws BadRequestException{
-        if (!status.equals(RelationshipStatusType.FRIENDS.toString())){
-            throw new BadRequestException("Input status is wrong.");
-        }
-    }
-
-    private void validStatusRemoved(String status)throws BadRequestException{
-        if (!status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
-            throw new BadRequestException("Input status is wrong.");
-        }
-    }
-
-    private void validStatusCancelRequest(String status)throws BadRequestException{
-        if (!status.equals(RelationshipStatusType.REQUEST_REJECTED.toString())){
-            throw new BadRequestException("Input status is wrong.");
         }
     }
 }
