@@ -43,31 +43,34 @@ public class RelationshipController extends Utils<Relationship> {
 
     @RequestMapping(path = "/add-friends", method = RequestMethod.POST)
     public ResponseEntity<String> addRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo){
-        long idUserFrom = Long.parseLong(userIdFrom);
-        long idUserTo = Long.parseLong(userIdTo);
-
         try {
-            User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
-            User userTo = userDAO.findById(idUserTo);
+            relationshipService.validationInputData(userIdFrom, userIdTo);
+            User userFrom = (User) session.getAttribute(userIdFrom);
 
-            if (userTo == null || userFrom == null) {
-                return new ResponseEntity<>("Users is not found.", HttpStatus.BAD_REQUEST);
-            }
+            if (userFrom != null){
+                User userTo = userDAO.findById(Long.parseLong(userIdTo));
 
-            relationshipService.validationInputData(idUserFrom, idUserTo);
+                if (userTo != null){
+                    Relationship relationshipFind = relationshipDAO.getRelationship(userIdFrom, userIdTo);
 
-            Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
-
-            if (relationshipFind == null){
-                Relationship relationship = new Relationship();
-                relationship.setUserFrom(userFrom);
-                relationship.setUserTo(userTo);
-                relationship.setStatusType(RelationshipStatusType.FRIEND_REQUEST);
-                relationshipService.save(relationship);
-                return new ResponseEntity<>(HttpStatus.OK);
+                    if (relationshipFind == null){
+                        Relationship relationship = new Relationship();
+                        relationship.setUserFrom(userFrom);
+                        relationship.setUserTo(userTo);
+                        relationship.setStatusType(RelationshipStatusType.FRIEND_REQUEST);
+                        relationshipService.save(relationship);
+                        return new ResponseEntity<>(HttpStatus.OK);
+                    }
+                    else {
+                        return relationshipService.sendFriendRequest(relationshipFind);
+                    }
+                }
+                else {
+                    return new ResponseEntity<>("User with ID " + userIdTo + " is not found in DB.", HttpStatus.BAD_REQUEST);
+                }
             }
             else {
-                return relationshipService.sendFriendRequest(relationshipFind);
+                return new ResponseEntity<>("User with ID " + userIdFrom + " is not logged in.", HttpStatus.BAD_REQUEST);
             }
         } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,26 +83,19 @@ public class RelationshipController extends Utils<Relationship> {
     @RequestMapping(path = "/update-relationship", method = RequestMethod.POST)
     public ResponseEntity<String> updateRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo,
                                    @RequestParam String status){
-        long idUserFrom = Long.parseLong(userIdFrom);
-        long idUserTo = Long.parseLong(userIdTo);
-
         try {
-            User userFrom = relationshipService.getUserFromSession(session, userIdFrom);
-            User userTo = relationshipService.getUserFromSession(session, userIdTo);
+            relationshipService.validationInputData(userIdFrom, userIdTo);
 
-            relationshipService.validationInputData(idUserFrom, idUserTo);
+            User userFrom = (User) session.getAttribute(userIdFrom);
+            User userTo = (User) session.getAttribute(userIdTo);
 
-            if (userTo == null && userFrom == null) {
-                return new ResponseEntity<>("Users is not authorized.", HttpStatus.BAD_REQUEST);
-            }
+            if (userTo != null || userFrom != null) {
+                Relationship relationshipFind = relationshipDAO.getRelationship(userIdFrom, userIdTo);
 
-            Relationship relationshipFind = relationshipDAO.getRelationship(idUserFrom, idUserTo);
-
-            if (relationshipService.getUserFromSession(session, userIdTo) != null || userFrom != null){
                 return relationshipService.updateRelationshipByStatus(relationshipFind, status, userIdTo, session);
             }
             else {
-                return new ResponseEntity<>("Something went wrong...", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Users is not authorized.", HttpStatus.BAD_REQUEST);
             }
         }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);

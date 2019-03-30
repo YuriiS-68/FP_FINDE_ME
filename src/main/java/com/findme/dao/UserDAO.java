@@ -44,12 +44,7 @@ public class UserDAO extends GeneralDAO<User> {
             System.err.println(e.getMessage());
             throw e;
         }
-        if (user != null){
-            return user;
-        }
-        else {
-            return null;
-        }
+        return user;
     }
 
     @SuppressWarnings("unchecked")

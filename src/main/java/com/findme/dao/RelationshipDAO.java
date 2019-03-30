@@ -15,7 +15,7 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
     private static final String GET_RELATIONSHIP = "SELECT * FROM RELATIONSHIP WHERE ID_USER_FROM = ? AND ID_USER_TO = ?";
 
     @SuppressWarnings("unchecked")
-    public Relationship getRelationship(Long idUserFrom, Long idUserTo)throws InternalServerError {
+    public Relationship getRelationship(String idUserFrom, String idUserTo)throws InternalServerError {
         Relationship relationship;
         NativeQuery<Relationship> query = (NativeQuery<Relationship>) getEntityManager().createNativeQuery(GET_RELATIONSHIP, Relationship.class);
         try {
@@ -25,11 +25,6 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
             throw e;
         }
 
-        if (relationship != null){
-            return relationship;
-        }
-        else {
-            return null;
-        }
+        return relationship;
     }
 }
