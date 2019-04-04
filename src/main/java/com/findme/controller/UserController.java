@@ -58,6 +58,11 @@ public class UserController extends Utils<User> {
         return "register";
     }
 
+    @RequestMapping(path = "/user-page", method = RequestMethod.GET)
+    public String userPage(){
+        return "user-page";
+    }
+
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
     public ResponseEntity<String> registerUser(@ModelAttribute User user){
         if (user == null){

@@ -73,7 +73,7 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public RelationshipService relationshipService(){
         RelationshipService relationshipService;
-        relationshipService = new RelationshipService(relationshipDAO());
+        relationshipService = new RelationshipService(relationshipDAO(), userDAO());
         return relationshipService;
     }
 

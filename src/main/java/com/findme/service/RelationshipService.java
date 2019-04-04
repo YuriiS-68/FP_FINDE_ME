@@ -1,14 +1,13 @@
 package com.findme.service;
 
 import com.findme.dao.RelationshipDAO;
+import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
 import com.findme.models.Relationship;
 import com.findme.models.RelationshipStatusType;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -17,13 +16,114 @@ import javax.servlet.http.HttpSession;
 public class RelationshipService {
 
     private RelationshipDAO relationshipDAO;
+    private UserDAO userDAO;
 
     @Autowired
-    public RelationshipService(RelationshipDAO relationshipDAO) {
+    public RelationshipService(RelationshipDAO relationshipDAO, UserDAO userDAO) {
         this.relationshipDAO = relationshipDAO;
+        this.userDAO = userDAO;
     }
 
-    public Relationship save(Relationship relationship)throws BadRequestException {
+    public void setRelationship(String userIdTo, String userIdFrom, HttpSession session)throws BadRequestException, InternalServerError{
+
+        User userFrom = (User) session.getAttribute(userIdFrom);
+        if (userFrom == null){
+            throw new BadRequestException("User with ID " + userIdFrom + " is not logged in.");
+        }
+
+        User userTo = userDAO.findById(Long.parseLong(userIdTo));
+        if (userTo == null){
+            throw new BadRequestException("User with ID " + userIdTo + " is not found in DB.");
+        }
+
+        Relationship relationshipFind = relationshipDAO.getRelationship(userFrom.getId(), userTo.getId());
+        try {
+            if (relationshipFind == null){
+                Relationship relationship = new Relationship();
+                relationship.setUserFrom(userFrom);
+                relationship.setUserTo(userTo);
+                relationship.setStatusType(RelationshipStatusType.REQUESTED);
+                save(relationship);
+            }
+            else if (relationshipFind.getStatusType().equals(RelationshipStatusType.CANCELED) ||
+                    relationshipFind.getStatusType().equals(RelationshipStatusType.DECLINED) ||
+                    relationshipFind.getStatusType().equals(RelationshipStatusType.DELETED)){
+                relationshipFind.setStatusType(RelationshipStatusType.REQUESTED);
+                relationshipDAO.update(relationshipFind);
+            }
+            else {
+                throw new BadRequestException("Something is wrong with the input.");
+            }
+        }catch (InternalServerError e) {
+            throw new InternalServerError("Something went wrong...");
+        }
+    }
+
+    public void setRelationshipByStatus(String status, String userIdTo, String userIdFrom, HttpSession session) throws BadRequestException, InternalServerError{
+        if (status == null){
+            throw  new BadRequestException("Status is not exist.");
+        }
+
+        User userFrom = (User) session.getAttribute(userIdFrom);
+        User userTo = (User) session.getAttribute(userIdTo);
+        Relationship relationshipFind = relationshipDAO.getRelationship(Long.parseLong(userIdFrom), Long.parseLong(userIdTo));
+        try {
+            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.REQUESTED) &&
+                    status.equals(RelationshipStatusType.ACCEPTED.toString()) && userTo.getId().equals(Long.parseLong(userIdTo))){
+                relationshipFind.setStatusType(RelationshipStatusType.ACCEPTED);
+                relationshipDAO.update(relationshipFind);
+                return;
+            }
+
+            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.REQUESTED) &&
+                    status.equals(RelationshipStatusType.DECLINED.toString()) && userTo.getId().equals(Long.parseLong(userIdTo))){
+                relationshipFind.setStatusType(RelationshipStatusType.DECLINED);
+                relationshipDAO.update(relationshipFind);
+                return;
+            }
+
+            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.ACCEPTED) &&
+                    status.equals(RelationshipStatusType.DELETED.toString()) && userTo.getId().equals(Long.parseLong(userIdTo))){
+                relationshipFind.setStatusType(RelationshipStatusType.DELETED);
+                relationshipDAO.update(relationshipFind);
+                return;
+            }
+
+            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.REQUESTED) &&
+                    status.equals(RelationshipStatusType.CANCELED.toString()) && userFrom.getId().equals(Long.parseLong(userIdFrom))){
+                relationshipFind.setStatusType(RelationshipStatusType.CANCELED);
+                relationshipDAO.update(relationshipFind);
+                return;
+            }
+
+            if (relationshipFind != null && relationshipFind.getStatusType().equals(RelationshipStatusType.ACCEPTED) &&
+                    status.equals(RelationshipStatusType.DELETED.toString()) && userFrom.getId().equals(Long.parseLong(userIdFrom))){
+                relationshipFind.setStatusType(RelationshipStatusType.DELETED);
+                relationshipDAO.update(relationshipFind);
+            }
+            else {
+                throw new BadRequestException("Something is wrong with the input. Method setRelationshipByStatus");
+            }
+        }catch (InternalServerError e) {
+            throw new InternalServerError("Something went wrong...");
+        }
+    }
+
+    public void validationInputData(String idUserFrom, String idUserTo, HttpSession session)throws BadRequestException{
+        if (idUserFrom == null || idUserTo == null){
+            throw  new BadRequestException("UserFrom or userTo is not exist.");
+        }
+
+        if (idUserFrom.equals(idUserTo)){
+            throw  new BadRequestException("Actions between the same user are not possible.");
+        }
+
+        if (session == null){
+            throw  new BadRequestException("Session is not exist.");
+        }
+    }
+
+    private Relationship save(Relationship relationship)throws BadRequestException {
         if (relationship != null && relationship.getId() != null){
             throw new BadRequestException("This Relationship with ID - " + relationship.getId() + " can not save in DB.");
         }
@@ -31,79 +131,5 @@ public class RelationshipService {
             relationshipDAO.save(relationship);
         }
         return relationship;
-    }
-
-    public ResponseEntity<String> updateRelationshipByStatus(Relationship relationshipFind, String status, String userIdTo, HttpSession session)throws BadRequestException{
-        validate(relationshipFind, status);
-        try {
-            if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.FRIENDS.toString()) &&
-                    session.getAttribute(userIdTo) != null){
-                relationshipFind.setStatusType(RelationshipStatusType.FRIENDS);
-                relationshipDAO.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-
-            if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIENDS) && status.equals(RelationshipStatusType.REMOVED_FROM_FRIENDS.toString())){
-                relationshipFind.setStatusType(RelationshipStatusType.REMOVED_FROM_FRIENDS);
-                relationshipDAO.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-
-            if (relationshipFind.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(RelationshipStatusType.REQUEST_REJECTED.toString())){
-                relationshipFind.setStatusType(RelationshipStatusType.REQUEST_REJECTED);
-                relationshipDAO.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-            }
-        }catch (InternalServerError e) {
-            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public ResponseEntity<String> sendFriendRequest(Relationship relationshipFind) {
-        if (relationshipFind == null){
-            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            if (relationshipFind.getStatusType().equals(RelationshipStatusType.REQUEST_REJECTED) ||
-                    relationshipFind.getStatusType().equals(RelationshipStatusType.REMOVED_FROM_FRIENDS)){
-                relationshipFind.setStatusType(RelationshipStatusType.FRIEND_REQUEST);
-                relationshipDAO.update(relationshipFind);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-            }
-        } catch (InternalServerError e) {
-            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public void validationInputData(String idUserFrom, String idUserTo)throws BadRequestException{
-        if (idUserFrom == null || idUserTo == null){
-            throw  new BadRequestException("Something is wrong with the input.");
-        }
-
-        if (idUserFrom.equals(idUserTo)){
-            throw  new BadRequestException("Actions between the same user are not possible.");
-        }
-    }
-
-    private void validate(Relationship relationship, String status)throws BadRequestException{
-        if (relationship == null || status == null){
-            throw new BadRequestException("Relationship or status is not exist.");
-        }
-
-        if (relationship.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(String.valueOf(RelationshipStatusType.FRIENDS)) ||
-                relationship.getStatusType().equals(RelationshipStatusType.FRIEND_REQUEST) && status.equals(String.valueOf(RelationshipStatusType.REQUEST_REJECTED)) ||
-                relationship.getStatusType().equals(RelationshipStatusType.FRIENDS) && status.equals(String.valueOf(RelationshipStatusType.REMOVED_FROM_FRIENDS))){
-            return;
-        }
-        else {
-            throw new BadRequestException("Something is wrong with the input");
-        }
     }
 }

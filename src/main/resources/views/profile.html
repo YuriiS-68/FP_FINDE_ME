@@ -8,7 +8,6 @@
             float: left;
             width: 400px;
             height: 480px;
-            /*border-style: solid;*/
         }
         .user-photo {
             width: 100%;
@@ -18,7 +17,6 @@
             margin-left: 140px;
             width: 500px;
             height: 600px;
-            /*border-style: solid;*/
         }
         .right {
             display: inline-block;
@@ -28,7 +26,6 @@
             height: 300px;
             text-align: center;
             font-size: 25px;
-            /*border-style: solid;*/
         }
         button {
             width: 120px;
@@ -41,7 +38,6 @@
         .btn{
             margin-top: 50px;
             border: 2px solid blue;
-            /*border: 2px solid #f05a22;*/
         }
         .button {
             margin-top: 25px;
@@ -73,8 +69,7 @@
         </div>
 
         <div>
-            <button id="accept" class="request">Accept request</button>
-            <button id="reject" class="request">Reject request</button>
+            <button id="canceled" class="request">Cancel request</button>
         </div>
     </div>
 
@@ -123,7 +118,7 @@
         $("#delete").click(function (e) {
             var userIdFrom = "50";
             var userIdTo = "90";
-            var status = "REMOVED_FROM_FRIENDS";
+            var status = "DELETED";
             $.ajax({
                 type: "POST",
                 url: "/update-relationship",
@@ -138,28 +133,10 @@
             e.preventDefault();
         });
 
-        $("#accept").click(function (e) {
+        $("#canceled").click(function (e) {
             var userIdFrom = "50";
             var userIdTo = "90";
-            var status = "FRIENDS";
-            $.ajax({
-                type: "POST",
-                url: "/update-relationship",
-                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
-                success: function success() {
-                    alert("Updated relationship success.");
-                },
-                error: function error(xhr, status, errorThrown) {
-                    alert("Failed to exit with: " + status + "." + errorThrown);
-                }
-            });
-            e.preventDefault();
-        });
-
-        $("#reject").click(function (e) {
-            var userIdFrom = "50";
-            var userIdTo = "90";
-            var status = "REQUEST_REJECTED";
+            var status = "CANCELED";
             $.ajax({
                 type: "POST",
                 url: "/update-relationship",
