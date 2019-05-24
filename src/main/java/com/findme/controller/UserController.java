@@ -34,67 +34,65 @@ public class UserController extends Utils<User> {
     public String profile(Model model, @PathVariable String userId) {
         try {
             User user = userDAO.findById(Long.parseLong(userId));
-            if (user == null){
+            if (user == null) {
                 model.addAttribute(userId);
                 return "errors/exception_npe";
             }
             model.addAttribute("user", user);
             return "profile";
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             model.addAttribute(userId);
             return "errors/exception_number_format";
-        }catch (InternalServerError e){
+        } catch (InternalServerError e) {
             return "errors/exception_internal_server";
         }
     }
 
     @RequestMapping(path = "/index", method = RequestMethod.GET)
-    public String mainePage(){
+    public String mainePage() {
         return "index";
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
-    public String registerPage(){
+    public String registerPage() {
         return "register";
     }
 
     @RequestMapping(path = "/user-page", method = RequestMethod.GET)
-    public String userPage(){
+    public String userPage() {
         return "user-page";
     }
 
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
-    public ResponseEntity<String> registerUser(@ModelAttribute User user){
-        if (user == null){
+    public ResponseEntity<String> registerUser(@ModelAttribute User user) {
+        if (user == null) {
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
         try {
-            if (userDAO.findUserByFields(user)){
+            if (userDAO.findUserByFields(user)) {
                 Date dateRegister = new Date();
                 user.setDateRegistered(dateRegister);
                 user.setDateLastActive(dateRegister);
                 userService.save(user);
                 return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-            }
-            else {
-                System.out.println("Went to the else block.");
+            } else {
                 return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
             }
-        }catch (InternalServerError e){
+        } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        }catch (BadRequestException e) {
+        } catch (BadRequestException e) {
             return new ResponseEntity<>("This user can not registered.", HttpStatus.BAD_REQUEST);
         }
     }
 
     @RequestMapping(path = "/login-in", method = RequestMethod.GET)
-    public String loginPage(){
+    public String loginPage() {
         return "login-in";
     }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
-    public String logoutPage(){
+    public String logoutPage() {
         return "logout";
     }
 
@@ -113,21 +111,20 @@ public class UserController extends Utils<User> {
 
             User userInSession = (User) session.getAttribute(String.valueOf(user.getId()));
 
-            if (userInSession != null){
+            if (userInSession != null) {
                 return new ResponseEntity<>("User is already logged in.", HttpStatus.BAD_REQUEST);
             }
 
             if (user.getEmail().equals(login) && user.getPassword().equals(pass)) {
                 session.setAttribute(String.valueOf(user.getId()), user);
                 return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
+            } else {
                 return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
-                }
-            }catch(InternalServerError e){
-                return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        } catch (InternalServerError e) {
+            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
     @RequestMapping(path = "/logout-user", method = RequestMethod.GET)
     public ResponseEntity<String> logout(HttpSession session, @RequestParam(value = "email") String login){

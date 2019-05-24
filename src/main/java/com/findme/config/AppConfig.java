@@ -110,7 +110,7 @@ public class AppConfig implements WebMvcConfigurer {
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
-        //em.setJpaProperties(additionalProperties());
+        em.setJpaProperties(additionalProperties());
 
         return em;
     }
@@ -133,12 +133,12 @@ public class AppConfig implements WebMvcConfigurer {
         return transactionManager;
     }
 
-    /*private Properties additionalProperties(){
+    private Properties additionalProperties(){
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
         properties.setProperty("sessionFactory", "sessionFactory");
-        properties.setProperty("show_sql", "true");
+        properties.setProperty("hibernate.show_sql", "true");
 
         return properties;
-    }*/
+    }
 }

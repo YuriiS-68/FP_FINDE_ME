@@ -14,6 +14,7 @@ public class Relationship extends IdEntity{
     private Long id;
     private User userFrom;
     private User userTo;
+    private Date acceptedFriends;
     private RelationshipStatusType statusType;
     private Set<User> users = new HashSet<>();
 
@@ -39,6 +40,12 @@ public class Relationship extends IdEntity{
     @JoinColumn(name = "ID_USER_TO")
     public User getUserTo() {
         return userTo;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "DATE_ACCEPTED")
+    public Date getAcceptedFriends() {
+        return acceptedFriends;
     }
 
     @Enumerated(EnumType.STRING)
@@ -74,6 +81,7 @@ public class Relationship extends IdEntity{
         return id.equals(that.id) &&
                 userFrom.equals(that.userFrom) &&
                 userTo.equals(that.userTo) &&
+                acceptedFriends.equals(that.acceptedFriends) &&
                 statusType == that.statusType;
     }
 
@@ -88,6 +96,7 @@ public class Relationship extends IdEntity{
                 .add("id=" + id)
                 .add("userFrom=" + userFrom.getId())
                 .add("userTo=" + userTo.getId())
+                .add("acceptedFriends=" + acceptedFriends)
                 .add("statusType=" + statusType)
                 .toString();
     }
@@ -102,6 +111,10 @@ public class Relationship extends IdEntity{
 
     public void setUserTo(User userTo) {
         this.userTo = userTo;
+    }
+
+    public void setAcceptedFriends(Date acceptedFriends) {
+        this.acceptedFriends = acceptedFriends;
     }
 
     public void setStatusType(RelationshipStatusType statusType) {
