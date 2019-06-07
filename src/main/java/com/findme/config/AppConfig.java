@@ -3,6 +3,7 @@ package com.findme.config;
 import com.findme.dao.PostDAO;
 import com.findme.dao.RelationshipDAO;
 import com.findme.dao.UserDAO;
+import com.findme.handler.*;
 import com.findme.service.PostService;
 import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
@@ -71,9 +72,19 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public HandlerForUser handlerForUser(){
+        return new HandlerForUser();
+    }
+
+    /*@Bean
+    public HandlerForUserFrom handlerForUserFrom(){
+        return new HandlerForUserFrom();
+    }*/
+
+    @Bean
     public RelationshipService relationshipService(){
         RelationshipService relationshipService;
-        relationshipService = new RelationshipService(relationshipDAO(), userDAO());
+        relationshipService = new RelationshipService(relationshipDAO(), userDAO(), handlerForUser());
         return relationshipService;
     }
 
