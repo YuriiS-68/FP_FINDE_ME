@@ -6,6 +6,8 @@ import com.findme.exception.InternalServerError;
 import com.findme.models.Relationship;
 import com.findme.models.RelationshipStatusType;
 import com.findme.models.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -13,27 +15,27 @@ import java.util.Date;
 @Component
 public class AcceptedHandler extends RelationshipHandler {
 
-    private RelationshipDAO relationshipDAO;
+    private final RelationshipDAO relationshipDAO;
 
-    /*public AcceptedHandler() {
-        super();
-        this.relationshipDAO = getRelationshipDAO();
-    }*/
+    @Autowired
+    public AcceptedHandler(RelationshipDAO relationshipDAO) {
+        this.relationshipDAO = relationshipDAO;
+    }
 
     @Override
-    public void setRelationship(Relationship relationship, User user, String status, String userId) throws BadRequestException, InternalServerError{
+    public void setRelationship(Relationship relationship, User user, String status, String userId, Long idUserFrom) throws BadRequestException, InternalServerError{
         if (user != null &&
                 checkStatusForChange(relationship, RelationshipStatusType.REQUESTED, RelationshipStatusType.ACCEPTED, status, user.getId(), userId)){
-            relationshipDAO.update(addFriendsByRequest(user, relationship));
+            relationshipDAO.update(addFriendsByRequest(idUserFrom, relationship));
         }
     }
 
-    private Relationship addFriendsByRequest(User user, Relationship relationship) throws BadRequestException, InternalServerError {
-        if (user == null || relationship == null){
-            throw new BadRequestException("User or relationship is not found.");
+    private Relationship addFriendsByRequest(Long idUser, Relationship relationship) throws BadRequestException, InternalServerError {
+        if (idUser == null || relationship == null){
+            throw new BadRequestException("IdUser or relationship is not found.");
         }
 
-        if (checkingNumberFriends(user)){
+        if (checkingNumberFriends(idUser)){
             Date acceptedRequest = new Date();
             relationship.setAcceptedFriends(acceptedRequest);
             relationship.setStatusType(RelationshipStatusType.ACCEPTED);
@@ -44,10 +46,16 @@ public class AcceptedHandler extends RelationshipHandler {
         return relationship;
     }
 
-    private boolean checkingNumberFriends(User user) throws BadRequestException, InternalServerError {
-        if (user == null || user.getId() == null){
-            throw new BadRequestException("User or his ID is not found.");
+    private boolean checkingNumberFriends(Long id) throws BadRequestException, InternalServerError {
+
+        if (id == null){
+            throw new BadRequestException("ID does not exist.");
         }
-        return relationshipDAO.getQuantityFriends(user.getId(), RelationshipStatusType.ACCEPTED) < 100;
+        return relationshipDAO.getQuantityFriends(id, RelationshipStatusType.ACCEPTED) < 4;
+    }
+
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
     }
 }

@@ -24,9 +24,9 @@ public class HandlerForUser {
         handlers.sort(INSTANCE);
     }
 
-    public void execute(Relationship relationship, User user, String status, String userId)throws BadRequestException, InternalServerError {
+    public void execute(Relationship relationship, User user, String status, String userId, Long idUserFrom)throws BadRequestException, InternalServerError {
         for (Handler handler : handlers){
-            handler.setRelationship(relationship, user, status, userId);
+            handler.setRelationship(relationship, user, status, userId, idUserFrom);
         }
     }
 }

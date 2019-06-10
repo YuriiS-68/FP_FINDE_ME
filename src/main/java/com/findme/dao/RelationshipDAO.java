@@ -23,6 +23,8 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
         Date dateAccepted;
         Date currentDate = new Date();
 
+        System.out.println("Method getQuantityHoursAfterAccepted. Input ID user - " + idUser);
+
         try {
             dateAccepted = getEntityManager().createQuery(GET_DATE_ACCEPTED, Date.class).setParameter("idParam", idUser)
                     .setParameter("statusParam", status)

@@ -7,5 +7,5 @@ import com.findme.models.User;
 
 public interface Handler {
 
-    void setRelationship(Relationship relationship, User user, String status, String userId)throws BadRequestException, InternalServerError;
+    void setRelationship(Relationship relationship, User user, String status, String userId, Long idUserFrom)throws BadRequestException, InternalServerError;
 }

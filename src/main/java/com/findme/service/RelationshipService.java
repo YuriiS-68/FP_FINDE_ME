@@ -45,13 +45,13 @@ public class RelationshipService {
                 relationship.setUserFrom(userFrom);
                 relationship.setUserTo(userTo);
                 relationship.setStatusType(RelationshipStatusType.REQUESTED);
-                save(sendRequest(userFrom, relationship));
+                save(sendRequest(Long.parseLong(userIdFrom), relationship));
             }
             else if (relationshipFind.getStatusType().equals(RelationshipStatusType.CANCELED) ||
                     relationshipFind.getStatusType().equals(RelationshipStatusType.DECLINED) ||
                     relationshipFind.getStatusType().equals(RelationshipStatusType.DELETED)){
                 relationshipFind.setStatusType(RelationshipStatusType.REQUESTED);
-                relationshipDAO.update(sendRequest(userFrom, relationshipFind));
+                relationshipDAO.update(sendRequest(Long.parseLong(userIdFrom), relationshipFind));
             }
             else {
                 throw new BadRequestException("Something is wrong with the input.");
@@ -69,44 +69,16 @@ public class RelationshipService {
         User userFrom = (User) session.getAttribute(userIdFrom);
         User userTo = (User) session.getAttribute(userIdTo);
         Relationship relationshipFind = relationshipDAO.getRelationship(Long.parseLong(userIdFrom), Long.parseLong(userIdTo));
+
+        System.out.println("RelationshipFind - " + relationshipFind);
         try {
             if (userTo != null){
-                handlerForUser.execute(relationshipFind, userTo, status, userIdTo);
+                handlerForUser.execute(relationshipFind, userTo, status, userIdTo, Long.parseLong(userIdFrom));
             }
 
             if (userFrom != null){
-                handlerForUser.execute(relationshipFind, userFrom, status, userIdFrom);
+                handlerForUser.execute(relationshipFind, userFrom, status, userIdFrom, Long.parseLong(userIdFrom));
             }
-            /*if (userTo != null &&
-                    checkStatusForChange(relationshipFind, RelationshipStatusType.REQUESTED, RelationshipStatusType.ACCEPTED, status, userTo.getId(), userIdTo)){
-                relationshipDAO.update(addFriendsByRequest(userTo, relationshipFind));
-                return;
-            }
-
-            if (userTo != null &&
-                    checkStatusForChange(relationshipFind, RelationshipStatusType.REQUESTED, RelationshipStatusType.DECLINED, status, userTo.getId(), userIdTo)) {
-                relationshipFind.setStatusType(RelationshipStatusType.DECLINED);
-                relationshipDAO.update(relationshipFind);
-                return;
-            }
-
-            if (userTo != null &&
-                    checkStatusForChange(relationshipFind, RelationshipStatusType.ACCEPTED, RelationshipStatusType.DELETED, status, userTo.getId(), userIdTo)){
-                relationshipDAO.update(delFromFriends(userTo, relationshipFind));
-                return;
-            }
-
-            if (userFrom != null &&
-                    checkStatusForChange(relationshipFind, RelationshipStatusType.REQUESTED, RelationshipStatusType.CANCELED, status, userFrom.getId(), userIdFrom)){
-                relationshipFind.setStatusType(RelationshipStatusType.CANCELED);
-                relationshipDAO.update(relationshipFind);
-                return;
-            }
-
-            if (userFrom != null &&
-                    checkStatusForChange(relationshipFind, RelationshipStatusType.ACCEPTED, RelationshipStatusType.DELETED, status, userFrom.getId(), userIdFrom)){
-                relationshipDAO.update(delFromFriends(userFrom, relationshipFind));
-            }*/
             else {
                 throw new BadRequestException("Something is wrong with the input. Method setRelationshipByStatus");
             }
@@ -115,17 +87,9 @@ public class RelationshipService {
         }
     }
 
-    /*private void changeStatusRelationship(Relationship relationship, User user, String status, String userId)throws BadRequestException, InternalServerError{
-        relationshipAcceptedHandler.setRelationship(relationship, user, status, userId);
-    }*/
-
-    /*private boolean checkStatusForChange(Relationship relationship, RelationshipStatusType currentStatus, RelationshipStatusType newStatus, String status, Long id, String userId){
-        return relationship != null && relationship.getStatusType().equals(currentStatus) && status.equals(newStatus.toString()) && id.equals(Long.parseLong(userId));
-    }*/
-
     public void validationInputData(String idUserFrom, String idUserTo, HttpSession session)throws BadRequestException{
         if (idUserFrom == null || idUserTo == null){
-            throw  new BadRequestException("UserFrom or userTo is not exist.");
+            throw  new BadRequestException("UserFrom or userTo does not exist.");
         }
 
         if (idUserFrom.equals(idUserTo)){
@@ -147,28 +111,12 @@ public class RelationshipService {
         return relationship;
     }
 
-    /*private Relationship addFriendsByRequest(User user, Relationship relationship) throws BadRequestException, InternalServerError {
-        if (user == null || relationship == null){
+    private Relationship sendRequest(Long idUser, Relationship relationship) throws BadRequestException, InternalServerError {
+        if (idUser == null || relationship == null){
             throw new BadRequestException("User or relationship is not found.");
         }
 
-        if (checkingNumberFriends(user)){
-            Date acceptedRequest = new Date();
-            relationship.setAcceptedFriends(acceptedRequest);
-            relationship.setStatusType(RelationshipStatusType.ACCEPTED);
-        }
-        else {
-            throw new BadRequestException("Friends limit exceeded.");
-        }
-        return relationship;
-    }*/
-
-    private Relationship sendRequest(User user, Relationship relationship) throws BadRequestException, InternalServerError {
-        if (user == null || relationship == null){
-            throw new BadRequestException("User or relationship is not found.");
-        }
-
-        if (checkingNumberRequested(user)){
+        if (checkingNumberRequested(idUser)){
             relationship.setStatusType(RelationshipStatusType.REQUESTED);
         }
         else {
@@ -177,39 +125,10 @@ public class RelationshipService {
         return relationship;
     }
 
-    /*private Relationship delFromFriends(User user, Relationship relationship) throws BadRequestException, InternalServerError {
-        if (user == null || relationship == null){
-            throw new BadRequestException("User or relationship is not found.");
+    private boolean checkingNumberRequested(Long id) throws BadRequestException, InternalServerError{
+        if (id == null){
+            throw new BadRequestException("ID does not exist.");
         }
-
-        if (checkingAcceptedDate(user)){
-            relationship.setStatusType(RelationshipStatusType.DELETED);
-            relationship.setAcceptedFriends(null);
-        }
-        else {
-            throw new BadRequestException("You can not perform an action delete from friends.");
-        }
-        return relationship;
-    }*/
-
-    /*private boolean checkingNumberFriends(User user) throws BadRequestException, InternalServerError {
-        if (user == null){
-            throw new BadRequestException("User is not found.");
-        }
-        return relationshipDAO.getQuantityFriends(user.getId(), RelationshipStatusType.ACCEPTED) < 100;
-    }*/
-
-    private boolean checkingNumberRequested(User user) throws BadRequestException, InternalServerError{
-        if (user == null){
-            throw new BadRequestException("User is not found.");
-        }
-        return relationshipDAO.getQuantityRequests(user.getId(), RelationshipStatusType.REQUESTED) < 10;
+        return relationshipDAO.getQuantityRequests(id, RelationshipStatusType.REQUESTED) < 10;
     }
-
-    /*private boolean checkingAcceptedDate(User user) throws BadRequestException, InternalServerError{
-        if (user == null){
-            throw new BadRequestException("User is not found.");
-        }
-        return relationshipDAO.getQuantityHoursAfterAccepted(user.getId(), RelationshipStatusType.ACCEPTED) >= 3;
-    }*/
 }
