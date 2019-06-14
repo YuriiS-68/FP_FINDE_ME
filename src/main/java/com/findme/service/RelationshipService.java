@@ -18,13 +18,13 @@ public class RelationshipService {
 
     private RelationshipDAO relationshipDAO;
     private UserDAO userDAO;
-    private HandlerForUser handlerForUser;
+    private HandlerChain handlerChain;
 
     @Autowired
-    public RelationshipService(RelationshipDAO relationshipDAO, UserDAO userDAO, HandlerForUser handlerForUser) {
+    public RelationshipService(RelationshipDAO relationshipDAO, UserDAO userDAO, HandlerChain handlerChain) {
         this.relationshipDAO = relationshipDAO;
         this.userDAO = userDAO;
-        this.handlerForUser = handlerForUser;
+        this.handlerChain = handlerChain;
     }
 
     public void setRelationship(String userIdTo, String userIdFrom, HttpSession session)throws BadRequestException, InternalServerError{
@@ -51,7 +51,7 @@ public class RelationshipService {
                     relationshipFind.getStatusType().equals(RelationshipStatusType.DECLINED) ||
                     relationshipFind.getStatusType().equals(RelationshipStatusType.DELETED)){
                 relationshipFind.setStatusType(RelationshipStatusType.REQUESTED);
-                relationshipDAO.update(sendRequest(Long.parseLong(userIdFrom), relationshipFind));
+                relationshipDAO.update(sendRequest(Long.valueOf(userIdFrom), relationshipFind));
             }
             else {
                 throw new BadRequestException("Something is wrong with the input.");
@@ -68,19 +68,15 @@ public class RelationshipService {
 
         User userFrom = (User) session.getAttribute(userIdFrom);
         User userTo = (User) session.getAttribute(userIdTo);
-        Relationship relationshipFind = relationshipDAO.getRelationship(Long.parseLong(userIdFrom), Long.parseLong(userIdTo));
+        Relationship relationshipFind = relationshipDAO.getRelationship(Long.valueOf(userIdFrom), Long.valueOf(userIdTo));
 
-        System.out.println("RelationshipFind - " + relationshipFind);
         try {
             if (userTo != null){
-                handlerForUser.execute(relationshipFind, userTo, status, userIdTo, Long.parseLong(userIdFrom));
+                handlerChain.execute(relationshipFind, userTo, status, Long.valueOf(userIdTo), Long.valueOf(userIdFrom));
             }
 
             if (userFrom != null){
-                handlerForUser.execute(relationshipFind, userFrom, status, userIdFrom, Long.parseLong(userIdFrom));
-            }
-            else {
-                throw new BadRequestException("Something is wrong with the input. Method setRelationshipByStatus");
+                handlerChain.execute(relationshipFind, userFrom, status, Long.valueOf(userIdTo), Long.valueOf(userIdFrom));
             }
         }catch (InternalServerError e) {
             throw new InternalServerError("Something went wrong...");
@@ -99,16 +95,6 @@ public class RelationshipService {
         if (session == null){
             throw  new BadRequestException("Session is not exist.");
         }
-    }
-
-    private Relationship save(Relationship relationship)throws BadRequestException {
-        if (relationship != null && relationship.getId() != null){
-            throw new BadRequestException("This Relationship with ID - " + relationship.getId() + " can not save in DB.");
-        }
-        else {
-            relationshipDAO.save(relationship);
-        }
-        return relationship;
     }
 
     private Relationship sendRequest(Long idUser, Relationship relationship) throws BadRequestException, InternalServerError {
@@ -130,5 +116,15 @@ public class RelationshipService {
             throw new BadRequestException("ID does not exist.");
         }
         return relationshipDAO.getQuantityRequests(id, RelationshipStatusType.REQUESTED) < 10;
+    }
+
+    private Relationship save(Relationship relationship)throws BadRequestException {
+        if (relationship != null && relationship.getId() != null){
+            throw new BadRequestException("This Relationship with ID - " + relationship.getId() + " can not save in DB.");
+        }
+        else {
+            relationshipDAO.save(relationship);
+        }
+        return relationship;
     }
 }

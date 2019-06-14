@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class DeletedHandler extends RelationshipHandler {
 
     private final RelationshipDAO relationshipDAO;
+    private Handler chain;
 
     @Autowired
     public DeletedHandler(RelationshipDAO relationshipDAO) {
@@ -20,19 +21,26 @@ public class DeletedHandler extends RelationshipHandler {
     }
 
     @Override
-    public void setRelationship(Relationship relationship, User user, String status, String userId, Long idUserFrom) throws BadRequestException, InternalServerError {
-        if (user != null &&
-                checkStatusForChange(relationship, RelationshipStatusType.ACCEPTED, RelationshipStatusType.DELETED, status, user.getId(), userId)){
-            relationshipDAO.update(delFromFriends(idUserFrom, relationship));
+    public void setRelationship(Relationship relationship, User user, String status, Long idUserTo, Long idUserFrom) throws BadRequestException, InternalServerError {
+        if (user != null && (user.getId().equals(idUserFrom) || user.getId().equals(idUserTo)) &&
+                checkStatusForChange(relationship, RelationshipStatusType.ACCEPTED, RelationshipStatusType.DELETED, status)){
+            relationshipDAO.update(delFromFriends(idUserFrom, idUserTo,  relationship));
+        }
+        else {
+            this.chain.setRelationship(relationship, user, status, idUserTo, idUserFrom);
         }
     }
 
-    private Relationship delFromFriends(Long idUser, Relationship relationship) throws BadRequestException, InternalServerError {
-        if (idUser == null || relationship == null){
-            throw new BadRequestException("IdUser or relationship is not found.");
+    public void setNextHandler(Handler nextChain) {
+        this.chain = nextChain;
+    }
+
+    private Relationship delFromFriends(Long idUserFrom, Long idUserTo, Relationship relationship) throws BadRequestException, InternalServerError {
+        if (idUserFrom == null || idUserTo == null || relationship == null){
+            throw new BadRequestException("IdUserFrom or idUserTo or relationship is not found.");
         }
 
-        if (checkingAcceptedDate(idUser)){
+        if (checkingAcceptedDate(idUserFrom, idUserTo)){
             relationship.setStatusType(RelationshipStatusType.DELETED);
             relationship.setAcceptedFriends(null);
         }
@@ -42,15 +50,10 @@ public class DeletedHandler extends RelationshipHandler {
         return relationship;
     }
 
-    private boolean checkingAcceptedDate(Long id) throws BadRequestException, InternalServerError{
-        if (id == null){
-            throw new BadRequestException("ID is not found.");
+    private boolean checkingAcceptedDate(Long idUserFrom, Long idUserTo) throws BadRequestException, InternalServerError{
+        if (idUserFrom == null || idUserTo == null){
+            throw new BadRequestException("IdUserFrom or idUserTo is not found.");
         }
-        return relationshipDAO.getQuantityHoursAfterAccepted(id, RelationshipStatusType.ACCEPTED) >= 3;
-    }
-
-    @Override
-    public int getOrder() {
-        return 2;
+        return relationshipDAO.getQuantityHoursAfterAccepted(idUserFrom, idUserTo, RelationshipStatusType.ACCEPTED) >= 3;
     }
 }

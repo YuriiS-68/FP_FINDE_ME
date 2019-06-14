@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class DeclinedHandler extends RelationshipHandler {
 
     private final RelationshipDAO relationshipDAO;
+    private Handler chain;
 
     @Autowired
     public DeclinedHandler(RelationshipDAO relationshipDAO) {
@@ -20,16 +21,18 @@ public class DeclinedHandler extends RelationshipHandler {
     }
 
     @Override
-    public void setRelationship(Relationship relationship, User user, String status, String userId, Long idUserFrom) throws BadRequestException, InternalServerError {
-        if (user != null &&
-                checkStatusForChange(relationship, RelationshipStatusType.REQUESTED, RelationshipStatusType.DECLINED, status, user.getId(), userId)) {
+    public void setRelationship(Relationship relationship, User user, String status, Long idUserTo, Long idUserFrom) throws BadRequestException, InternalServerError {
+        if (user != null && user.getId().equals(idUserTo) &&
+                checkStatusForChange(relationship, RelationshipStatusType.REQUESTED, RelationshipStatusType.DECLINED, status)) {
             relationship.setStatusType(RelationshipStatusType.DECLINED);
             relationshipDAO.update(relationship);
         }
+        else {
+            this.chain.setRelationship(relationship, user, status, idUserTo, idUserFrom);
+        }
     }
 
-    @Override
-    public int getOrder() {
-        return 1;
+    public void setNextHandler(Handler nextChain) {
+        this.chain = nextChain;
     }
 }

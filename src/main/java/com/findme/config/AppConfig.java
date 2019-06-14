@@ -72,14 +72,29 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public HandlerForUser handlerForUser(){
-        return new HandlerForUser();
+    public HandlerChain handlerForUser(){
+        return new HandlerChain(relationshipDAO());
     }
 
-    /*@Bean
-    public HandlerForUserFrom handlerForUserFrom(){
-        return new HandlerForUserFrom();
-    }*/
+    @Bean
+    public DeletedHandler deletedHandler(){
+        return new DeletedHandler(relationshipDAO());
+    }
+
+    @Bean
+    public CanceledHandler canceledHandler(){
+        return new CanceledHandler(relationshipDAO());
+    }
+
+    @Bean
+    public DeclinedHandler declinedHandler(){
+        return new DeclinedHandler(relationshipDAO());
+    }
+
+    @Bean
+    public AcceptedHandler acceptedHandler(){
+        return new AcceptedHandler(relationshipDAO());
+    }
 
     @Bean
     public RelationshipService relationshipService(){
