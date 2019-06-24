@@ -2,11 +2,13 @@ package com.findme.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.*;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -15,8 +17,11 @@ import java.util.StringJoiner;
 public class Post extends IdEntity{
     private Long id;
     private String message;
+    private String location;
     private Date datePosted;
     private User userPosted;
+    private User userPagePosted;
+    private List<User> usersTagged;
     //TODO
     //levels permissions
 
@@ -40,6 +45,11 @@ public class Post extends IdEntity{
         return message;
     }
 
+    @Column(name = "LOCATIONS", nullable = false)
+    public String getLocation() {
+        return location;
+    }
+
     @Column(name = "DATE_POSTED", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     public Date getDatePosted() {
@@ -50,6 +60,18 @@ public class Post extends IdEntity{
     @JoinColumn(name = "ID_USER_POSTED")
     public User getUserPosted() {
         return userPosted;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USER_PAGE_POSTED")
+    public User getUserPagePosted() {
+        return userPagePosted;
+    }
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, targetEntity = User.class)
+    public List<User> getUsersTagged() {
+        return usersTagged;
     }
 
     @JsonCreator
@@ -72,13 +94,15 @@ public class Post extends IdEntity{
         Post post = (Post) o;
         return id.equals(post.id) &&
                 message.equals(post.message) &&
+                location.equals(post.location) &&
                 datePosted.equals(post.datePosted) &&
-                userPosted.equals(post.userPosted);
+                userPosted.equals(post.userPosted) &&
+                userPagePosted.equals(post.userPagePosted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, datePosted);
+        return Objects.hash(id, message, location, datePosted, userPosted, userPagePosted);
     }
 
     @Override
@@ -86,8 +110,10 @@ public class Post extends IdEntity{
         return new StringJoiner(", ", Post.class.getSimpleName() + "[", "]")
                 .add("id=" + id)
                 .add("message='" + message + "'")
+                .add("location='" + location + "'")
                 .add("datePosted=" + datePosted)
                 .add("userPosted=" + userPosted)
+                .add("userPagePosted=" + userPagePosted)
                 .toString();
     }
 
@@ -99,11 +125,23 @@ public class Post extends IdEntity{
         this.message = message;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public void setDatePosted(Date datePosted) {
         this.datePosted = datePosted;
     }
 
     public void setUserPosted(User userPosted) {
         this.userPosted = userPosted;
+    }
+
+    public void setUserPagePosted(User userPagePosted) {
+        this.userPagePosted = userPagePosted;
+    }
+
+    public void setUsersTagged(List<User> usersTagged) {
+        this.usersTagged = usersTagged;
     }
 }

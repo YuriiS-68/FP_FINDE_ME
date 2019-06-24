@@ -19,12 +19,25 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
     private static final String GET_COUNT_ROWS_REQUESTS = "SELECT COUNT(s) FROM Relationship s WHERE s.userFrom.id = :idParam AND s.statusType = :statusParam";
     private static final String GET_DATE_ACCEPTED = "SELECT acceptedFriends FROM Relationship s WHERE s.userFrom.id = :idFromParam AND s.userTo.id = :idToParam" +
             " AND s.statusType = :statusParam";
+    private static final String GET_STATUS_BETWEEN_USERS = "SELECT statusType FROM Relationship s WHERE s.userFrom.id = :idFromParam AND s.userTo.id = :idToParam";
+
+    public String getStatusBetweenUsers(Long idUserFrom, Long idUserTo)throws InternalServerError{
+        String status;
+        try {
+            status = getEntityManager().createQuery(GET_STATUS_BETWEEN_USERS, String.class)
+                    .setParameter("idFromParam", idUserFrom)
+                    .setParameter("idToParam", idUserTo)
+                    .getSingleResult();
+        }catch (NoResultException e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
+        return status;
+    }
 
     public int getQuantityHoursAfterAccepted(Long idUserFrom, Long idUserTo, RelationshipStatusType status)throws InternalServerError{
         Date dateAccepted;
         Date currentDate = new Date();
-
-        System.out.println("Method getQuantityHoursAfterAccepted. Input ID user - " + idUserFrom);
 
         try {
             dateAccepted = getEntityManager().createQuery(GET_DATE_ACCEPTED, Date.class).setParameter("idFromParam", idUserFrom)

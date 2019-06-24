@@ -62,7 +62,7 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public PostService postService(){
         PostService postService;
-        postService = new PostService(postDAO());
+        postService = new PostService(postDAO(), userDAO(), relationshipDAO());
         return postService;
     }
 

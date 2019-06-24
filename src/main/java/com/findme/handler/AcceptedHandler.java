@@ -54,7 +54,6 @@ public class AcceptedHandler extends RelationshipHandler {
     }
 
     private boolean checkingNumberFriends(Long id) throws BadRequestException, InternalServerError {
-
         if (id == null){
             throw new BadRequestException("ID does not exist.");
         }

@@ -6,12 +6,16 @@ import com.findme.exception.InternalServerError;
 import com.findme.models.Post;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @Controller
@@ -24,6 +28,22 @@ public class PostController extends Utils<Post> {
     public PostController(PostService postService, PostDAO postDAO) {
         this.postService = postService;
         this.postDAO = postDAO;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/createPost", produces = "text/plain")
+    public ResponseEntity<String> addPost(HttpSession session, @RequestParam String idUserPosted, @RequestParam String idUserPagePosted,
+                                          @RequestParam String message, @RequestParam String location){
+
+        try {
+            postService.validationInputData(session, idUserPosted, idUserPagePosted, message, location);
+            postService.createPost(session, idUserPosted, idUserPagePosted, message, location);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (BadRequestException e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
+        }catch (InternalServerError e) {
+            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/savePost", produces = "text/plain")
