@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.Date;
 
 @Service
@@ -35,6 +36,8 @@ public class PostService {
 
         User userPagePosted = checkUserPagePosted(idUserPagePosted);
 
+        validateMessage(message);
+
         Post post = new Post();
         post.setMessage(message);
         post.setLocation(location);
@@ -47,20 +50,6 @@ public class PostService {
         }
         else {
             post.setUserPagePosted(userPosted);
-        }
-    }
-
-    private User checkUserPagePosted(String idUserPagePosted)throws BadRequestException, InternalServerError{
-        User userPagePosted = userDAO.findById(Long.parseLong(idUserPagePosted));
-        if (userPagePosted == null){
-            throw new BadRequestException("User with ID " + idUserPagePosted + " is not found in DB.");
-        }
-        return userPagePosted;
-    }
-
-    private void checkStatusBetweenUsers(String idUserPosted, String idUserPagePosted) throws BadRequestException, InternalServerError {
-        if (!relationshipDAO.getStatusBetweenUsers(Long.parseLong(idUserPosted), Long.parseLong(idUserPagePosted)).equals("ACCEPTED")){
-            throw new BadRequestException("User with ID " + idUserPosted + " and User with ID " + idUserPagePosted + " are not friends.");
         }
     }
 
@@ -104,5 +93,47 @@ public class PostService {
             throw new BadRequestException("The ID entered does not exist");
         }
         postDAO.delete(id);
+    }
+
+    //1. Найти в посте имя или фамилию юзера или все вместе
+    //2. Сделать запрос в базу и получить юзера по имени и фамилии
+    //Пока не пойму как это делать...
+    private User findUsersTagged(String message){
+        String[] subString = message.split(" ");
+        User userTagged = null;
+
+        for (String element : subString){
+            if (element != null){
+
+            }
+        }
+
+        return userTagged;
+    }
+
+    private User checkUserPagePosted(String idUserPagePosted)throws BadRequestException, InternalServerError{
+        User userPagePosted = userDAO.findById(Long.parseLong(idUserPagePosted));
+        if (userPagePosted == null){
+            throw new BadRequestException("User with ID " + idUserPagePosted + " is not found in DB.");
+        }
+        return userPagePosted;
+    }
+
+    private void checkStatusBetweenUsers(String idUserPosted, String idUserPagePosted) throws BadRequestException, InternalServerError {
+        if (!relationshipDAO.getStatusBetweenUsers(Long.parseLong(idUserPosted), Long.parseLong(idUserPagePosted)).equalsIgnoreCase("ACCEPTED")){
+            throw new BadRequestException("User with ID " + idUserPosted + " and User with ID " + idUserPagePosted + " are not friends.");
+        }
+    }
+
+    private void validateMessage(String message)throws BadRequestException{
+        String[] str = message.split("/");
+
+        System.out.println(Arrays.toString(str));
+
+        for (String element : str){
+            if (element != null && (element.equalsIgnoreCase("http:") || element.equalsIgnoreCase("https:"))){
+                throw new BadRequestException("Message contains not valid link.");
+            }
+        }
     }
 }

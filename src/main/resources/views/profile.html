@@ -46,6 +46,10 @@
             margin-top: 25px;
             border: 2px solid red;
         }
+        .button_post{
+            margin-top: 25px;
+            border: 2px solid darkmagenta;
+        }
         .request {
             margin-top: 25px;
             border: 2px solid orange;
@@ -65,6 +69,7 @@
         <div>
             <button id="add-friends" class="button">Add in friends</button>
             <button id="delete" class="button_del">Delete from friends</button>
+            <button id="create" class="button_post">Create post</button>
             <button class="btn">Send message</button>
         </div>
 
@@ -125,6 +130,24 @@
                 data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
                 success: function success() {
                     alert("Updated relationship success.");
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });
+
+        $("#create").click(function (e) {
+            var userIdFrom = "50";
+            var userIdTo = "90";
+            //var status = "DELETED";
+            $.ajax({
+                type: "POST",
+                url: "/createPost",
+                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                success: function success() {
+                    alert("Created post success.");
                 },
                 error: function error(xhr, status, errorThrown) {
                     alert("Failed to exit with: " + status + "." + errorThrown);

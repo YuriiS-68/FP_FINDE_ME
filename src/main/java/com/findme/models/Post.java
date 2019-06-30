@@ -69,7 +69,9 @@ public class Post extends IdEntity{
     }
 
     @JsonIgnore
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, targetEntity = User.class)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "POST_USERS1", joinColumns = @JoinColumn(name = "POST_ID"),
+            inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     public List<User> getUsersTagged() {
         return usersTagged;
     }
