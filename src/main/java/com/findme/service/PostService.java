@@ -10,7 +10,6 @@ import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -28,47 +27,22 @@ public class PostService {
         this.relationshipDAO = relationshipDAO;
     }
 
-    public void createPost(HttpSession session, String idUserPosted, String idUserPagePosted, String message, String location)throws BadRequestException, InternalServerError{
-        User userPosted = (User) session.getAttribute(idUserPosted);
-        if (userPosted == null){
-            throw new BadRequestException("User with ID " + idUserPosted + " is not logged in.");
-        }
+    public void createPost(Post post)throws BadRequestException, InternalServerError{
 
-        User userPagePosted = checkUserPagePosted(idUserPagePosted);
+        User userPagePosted = checkUserPagePosted(post.getUserPagePosted().getId());
 
-        validateMessage(message);
+        validateMessage(post.getMessage());
 
-        Post post = new Post();
-        post.setMessage(message);
-        post.setLocation(location);
         Date datePosted = new Date();
         post.setDatePosted(datePosted);
-        post.setUserPosted(userPosted);
-        if (!idUserPosted.equals(idUserPagePosted)){
-            checkStatusBetweenUsers(idUserPosted, idUserPagePosted);
+        if (!post.getUserPosted().equals(post.getUserPagePosted())){
+            checkStatusBetweenUsers(post.getUserPosted().getId().toString(), post.getUserPagePosted().getId().toString());
             post.setUserPagePosted(userPagePosted);
         }
         else {
-            post.setUserPagePosted(userPosted);
+            post.setUserPagePosted(post.getUserPosted());
         }
-    }
-
-    public void validationInputData(HttpSession session, String idUserPosted, String idUserPagePosted, String message, String location)throws BadRequestException{
-        if (idUserPosted == null || idUserPagePosted == null){
-            throw  new BadRequestException("UserPosted or UserPagePosted does not exist.");
-        }
-
-        if (session == null){
-            throw  new BadRequestException("Session is not exist.");
-        }
-
-        if (message == null){
-            throw  new BadRequestException("Message is not exist.");
-        }
-
-        if (location == null){
-            throw  new BadRequestException("Location is not exist.");
-        }
+        save(post);
     }
 
     public Post save(Post post)throws BadRequestException{
@@ -111,8 +85,8 @@ public class PostService {
         return userTagged;
     }
 
-    private User checkUserPagePosted(String idUserPagePosted)throws BadRequestException, InternalServerError{
-        User userPagePosted = userDAO.findById(Long.parseLong(idUserPagePosted));
+    private User checkUserPagePosted(Long idUserPagePosted)throws BadRequestException, InternalServerError{
+        User userPagePosted = userDAO.findById(idUserPagePosted);
         if (userPagePosted == null){
             throw new BadRequestException("User with ID " + idUserPagePosted + " is not found in DB.");
         }
