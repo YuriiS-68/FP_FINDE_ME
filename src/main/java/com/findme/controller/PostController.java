@@ -28,22 +28,29 @@ public class PostController extends Utils<Post> {
         this.postDAO = postDAO;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/createPost", produces = "text/plain")
-    public ResponseEntity<String> addPost(HttpSession session, @ModelAttribute Post post){
+    @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain")
+    public ResponseEntity<String> addPost(@ModelAttribute Post post, HttpSession session){
+        if (post == null){
+            return new ResponseEntity<>("The post is not exist.", HttpStatus.BAD_REQUEST);
+        }
+
+        System.out.println("Post - " + post);
+        System.out.println("User posted - " + post.getUserPosted());
 
         try {
+            if (post.getUserPosted() == null || post.getUserPosted().getId() == null){
+                return new ResponseEntity<>("Something problem with user posted.", HttpStatus.BAD_REQUEST);
+            }
+
             User user = (User) session.getAttribute(String.valueOf(post.getUserPosted().getId()));
+            System.out.println("User - " + user);
             if (user == null) {
                 return new ResponseEntity<>("The post can not be posted. User is not logged.", HttpStatus.BAD_REQUEST);
             }
 
-            if (postDAO.findPostByUser(post)) {
-                postService.createPost(post);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            else {
-                return new ResponseEntity<>("Post is already exist.", HttpStatus.BAD_REQUEST);
-            }
+            postService.createPost(post);
+            return new ResponseEntity<>(HttpStatus.OK);
+
         } catch (BadRequestException e) {
             System.err.println(e.getMessage());
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
@@ -59,7 +66,6 @@ public class PostController extends Utils<Post> {
 
         try {
             postService.save(post);
-
         }catch (BadRequestException e){
             System.err.println(e.getMessage());
             throw e;

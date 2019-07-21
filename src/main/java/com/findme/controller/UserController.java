@@ -69,6 +69,8 @@ public class UserController extends Utils<User> {
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
+        System.out.println("Input user for registration: - " + user);
+
         try {
             if (userDAO.findUserByFields(user)) {
                 Date dateRegister = new Date();

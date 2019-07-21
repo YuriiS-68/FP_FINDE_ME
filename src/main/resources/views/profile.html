@@ -18,6 +18,13 @@
             width: 500px;
             height: 600px;
         }
+        .down{
+            display: inline-block;
+            margin-left: 140px;
+            width: 500px;
+            height: 200px;
+            border: 2px solid black;
+        }
         .right {
             display: inline-block;
             float: right;
@@ -69,7 +76,6 @@
         <div>
             <button id="add-friends" class="button">Add in friends</button>
             <button id="delete" class="button_del">Delete from friends</button>
-            <button id="create" class="button_post">Create post</button>
             <button class="btn">Send message</button>
         </div>
 
@@ -91,6 +97,15 @@
         <p th:text="${user.getReligion()}"></p>
         <p th:text="${user.getSchool()}"></p>
         <p th:text="${user.getUniversity()}"></p>
+    </div>
+
+    <div class="down">
+        <!--/*@thymesVar id="post" type="com.findme.models.Post"*/-->
+        <p th:text="${post.getMessage()}"></p>
+        <label>Message:
+            <input id="message" name="post">
+        </label>
+        <button id="create_post" class="button_post">Create post</button>
     </div>
 
     <div id="relationship-status" class="right">
@@ -138,7 +153,7 @@
             e.preventDefault();
         });
 
-        $("#create").click(function (e) {
+        $("#create_post").click(function (e) {
             var userIdFrom = "50";
             var userIdTo = "90";
             //var status = "DELETED";
