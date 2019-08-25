@@ -28,7 +28,7 @@ public class PostController extends Utils<Post> {
         this.postDAO = postDAO;
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain")
+    /*@RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain")
     public ResponseEntity<String> addPost(@ModelAttribute Post post, HttpSession session){
         if (post == null){
             return new ResponseEntity<>("The post is not exist.", HttpStatus.BAD_REQUEST);
@@ -57,7 +57,7 @@ public class PostController extends Utils<Post> {
         }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 
     @RequestMapping(method = RequestMethod.POST, value = "/savePost", produces = "text/plain")
     public @ResponseBody

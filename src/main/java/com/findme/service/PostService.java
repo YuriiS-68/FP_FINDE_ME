@@ -27,7 +27,7 @@ public class PostService {
         this.relationshipDAO = relationshipDAO;
     }
 
-    public void createPost(Post post)throws BadRequestException, InternalServerError{
+    /*public void createPost(Post post)throws BadRequestException, InternalServerError{
 
         User userPagePosted = checkUserPagePosted(post.getUserPagePosted().getId());
 
@@ -43,7 +43,7 @@ public class PostService {
             post.setUserPagePosted(post.getUserPosted());
         }
         save(post);
-    }
+    }*/
 
     public Post save(Post post)throws BadRequestException{
         if (post != null && post.getId() != null){
@@ -72,7 +72,7 @@ public class PostService {
     //1. Найти в посте имя или фамилию юзера или все вместе
     //2. Сделать запрос в базу и получить юзера по имени и фамилии
     //Пока не пойму как это делать...
-    private User findUsersTagged(String message){
+    /*private User findUsersTagged(String message){
         String[] subString = message.split(" ");
         User userTagged = null;
 
@@ -109,5 +109,5 @@ public class PostService {
                 throw new BadRequestException("Message contains not valid link.");
             }
         }
-    }
+    }*/
 }
