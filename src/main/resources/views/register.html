@@ -59,12 +59,12 @@
         <label>Age:
             <input type="text" name="age" required>
         </label>
-        <label>Relationship:
-            <input type="text" name="relationship" required>
-        </label>
-        <label>Religion:
-            <input type="text" name="religion" required>
-        </label>
+        <!--<label>Relationship:-->
+            <!--<input type="text" name="relationship" required>-->
+        <!--</label>-->
+        <!--<label>Religion:-->
+            <!--<input type="text" name="religion" required>-->
+        <!--</label>-->
         <label>School:
             <input type="text" name="school" required>
         </label>
@@ -84,12 +84,11 @@
 <!--<div th:replace="fragments/footer :: footer" />-->
 <script>
     $("#form").submit(function (e) {
-        var form = $(this).serialize();
         debugger;
         $.ajax({
             type: "POST",
             url: "/register-user",
-            data: form,
+            data: $('#form').serialize(),
             success: function success() {
                 debugger;
                 alert("User registered success!");
