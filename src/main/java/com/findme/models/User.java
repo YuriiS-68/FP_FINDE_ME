@@ -20,7 +20,7 @@ public class User extends IdEntity{
     private String password;
     private String country;
     private String city;
-    private Integer age;
+    private String age;
     private Date dateRegistered;
     private Date dateLastActive;
     private RelationshipType relationship;
@@ -81,7 +81,7 @@ public class User extends IdEntity{
     }
 
     @Column(name = "AGE", nullable = false)
-    public Integer getAge() {
+    public String getAge() {
         return age;
     }
 
@@ -249,7 +249,7 @@ public class User extends IdEntity{
         this.city = city;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
@@ -292,4 +292,6 @@ public class User extends IdEntity{
     public void setStatuses(Set<Relationship> statuses) {
         this.statuses = statuses;
     }
+
+
 }
