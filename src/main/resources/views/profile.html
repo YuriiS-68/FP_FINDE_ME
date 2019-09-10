@@ -109,10 +109,13 @@
             <label>Location:
                 <input id="location" name="place">
             </label>
-            <label>UserPagePosted
-                <input id="userId" name="userPagePosted">
+            <label>UserPosted
+                <input id="userPostedId" name="userPosted">
             </label>
-            <button id="create_post" class="button_post">Create post</button>
+            <label>UserPagePosted
+                <input id="userPagePostedId" name="userPagePosted">
+            </label>
+            <button type="submit" class="button_post">Create post</button>
         </form>
     </div>
 
@@ -161,14 +164,15 @@
             e.preventDefault();
         });
 
-        $("#create_post").click(function (e) {
-            var idUserPosted = "50";
-            var idUserPagePosted = "90";
+        $("#post-form").click(function (e) {
+            var form = $(this).serialize();
+            //var idUserPosted = "50";
+            //var idUserPagePosted = "90";
             debugger;
             $.ajax({
                 type: "POST",
                 url: "/createPost",
-                data: "userPosted=" + idUserPosted + "&userPagePosted=" + idUserPagePosted,
+                data: form /*+ "userPosted=" + idUserPosted + "&userPagePosted=" + idUserPagePosted*/,
                 success: function success() {
                     debugger;
                     alert("Created post success.");
