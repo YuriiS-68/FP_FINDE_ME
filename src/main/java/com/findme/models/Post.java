@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-@Entity
+@Entity(name = "Post")
 @Table(name = "POST")
 public class Post extends IdEntity{
     private Long id;
     private String message;
     private String location;
     private Date datePosted;
-    //private User userPosted;
-    //private User userPagePosted;
-    //private List<User> usersTagged;
+    private User userPosted;
+    private User userPagePosted;
+    private List<User> usersTagged;
     //TODO
     //levels permissions
 
@@ -56,25 +56,25 @@ public class Post extends IdEntity{
         return datePosted;
     }
 
-    //@OneToMany(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "ID_USER_POSTED")
-    /*public User getUserPosted() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USER_POSTED")
+    public User getUserPosted() {
         return userPosted;
-    }*/
+    }
 
-    //@OneToMany(mappedBy = "", fetch = FetchType.LAZY, targetEntity = User.class)
-    //@JoinColumn(name = "ID_USER_PAGE_POSTED")
-    /*public User getUserPagePosted() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_USER_PAGE_POSTED")
+    public User getUserPagePosted() {
         return userPagePosted;
-    }*/
+    }
 
-    /*@JsonIgnore
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "POST_USERS1", joinColumns = @JoinColumn(name = "POST_ID"),
             inverseJoinColumns = @JoinColumn(name = "USER_ID"))
     public List<User> getUsersTagged() {
         return usersTagged;
-    }*/
+    }
 
     @JsonCreator
     public static Post createFromJson(String jsonString){
@@ -97,14 +97,14 @@ public class Post extends IdEntity{
         return id.equals(post.id) &&
                 message.equals(post.message) &&
                 location.equals(post.location) &&
-                datePosted.equals(post.datePosted)/* &&
+                datePosted.equals(post.datePosted) &&
                 userPosted.equals(post.userPosted) &&
-                userPagePosted.equals(post.userPagePosted)*/;
+                userPagePosted.equals(post.userPagePosted);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, message, location, datePosted/*, userPosted, userPagePosted*/);
+        return Objects.hash(id, message, location, datePosted, userPosted, userPagePosted);
     }
 
     @Override
@@ -114,8 +114,8 @@ public class Post extends IdEntity{
                 .add("message='" + message + "'")
                 .add("location='" + location + "'")
                 .add("datePosted=" + datePosted)
-                //.add("userPosted=" + userPosted)
-                //.add("userPagePosted=" + userPagePosted)
+                .add("userPosted=" + userPosted)
+                .add("userPagePosted=" + userPagePosted)
                 .toString();
     }
 
@@ -135,15 +135,15 @@ public class Post extends IdEntity{
         this.datePosted = datePosted;
     }
 
-    /*public void setUserPosted(User userPosted) {
+    public void setUserPosted(User userPosted) {
         this.userPosted = userPosted;
     }
 
     public void setUserPagePosted(User userPagePosted) {
         this.userPagePosted = userPagePosted;
-    }*/
+    }
 
-    /*public void setUsersTagged(List<User> usersTagged) {
+    public void setUsersTagged(List<User> usersTagged) {
         this.usersTagged = usersTagged;
-    }*/
+    }
 }

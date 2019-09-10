@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional
 public class PostDAO extends GeneralDAO<Post> {
 
-    /*private static final String FIND_POST_BY_USER = "SELECT POST_ID FROM POST WHERE ID_USER_POSTED = ? AND ID_USER_PAGE_POSTED = ?";
+    private static final String FIND_POST_BY_USER = "SELECT POST_ID FROM POST WHERE ID_USER_POSTED = ? AND ID_USER_PAGE_POSTED = ?";
 
     @SuppressWarnings("unchecked")
     public boolean findPostByUser(Post post)throws InternalServerError {
@@ -34,5 +34,5 @@ public class PostDAO extends GeneralDAO<Post> {
             }
         }
         return true;
-    }*/
+    }
 }

@@ -33,6 +33,7 @@
             height: 300px;
             text-align: center;
             font-size: 25px;
+            border: 2px solid palegreen;
         }
         button {
             width: 120px;
@@ -100,12 +101,19 @@
     </div>
 
     <div class="down">
-        <!--/*@thymesVar id="post" type="com.findme.models.Post"*/-->
-        <p th:text="${post.getMessage()}"></p>
-        <label>Message:
-            <input id="message" name="post">
-        </label>
-        <button id="create_post" class="button_post">Create post</button>
+        <!--@thymesVar id="post" type="com.findme.models.Post"-->
+        <form id="post-form">
+            <label>Message:
+                <input id="message" name="post">
+            </label>
+            <label>Location:
+                <input id="location" name="place">
+            </label>
+            <label>UserPagePosted
+                <input id="userId" name="userPagePosted">
+            </label>
+            <button id="create_post" class="button_post">Create post</button>
+        </form>
     </div>
 
     <div id="relationship-status" class="right">
@@ -154,14 +162,15 @@
         });
 
         $("#create_post").click(function (e) {
-            var userIdFrom = "50";
-            var userIdTo = "90";
-            //var status = "DELETED";
+            var idUserPosted = "50";
+            var idUserPagePosted = "90";
+            debugger;
             $.ajax({
                 type: "POST",
                 url: "/createPost",
-                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                data: "userPosted=" + idUserPosted + "&userPagePosted=" + idUserPagePosted,
                 success: function success() {
+                    debugger;
                     alert("Created post success.");
                 },
                 error: function error(xhr, status, errorThrown) {

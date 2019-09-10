@@ -3,6 +3,8 @@ package com.findme.service;
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
+import com.findme.models.RelationshipType;
+import com.findme.models.ReligionType;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,12 @@ public class UserService {
             userDAO.save(user);
         }
         return user;
+    }
+
+    public boolean validateEnums(User user){
+        return user.getReligion().equals(ReligionType.Christian) || user.getReligion().equals(ReligionType.Muslim) ||
+                user.getReligion().equals(ReligionType.Catholic) || user.getReligion().equals(ReligionType.Buddhist) &&
+                user.getRelationship().equals(RelationshipType.married) || user.getRelationship().equals(RelationshipType.single);
     }
 
     public void update(User user)throws BadRequestException, InternalServerError{

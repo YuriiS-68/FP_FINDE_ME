@@ -27,7 +27,7 @@ public class PostService {
         this.relationshipDAO = relationshipDAO;
     }
 
-    /*public void createPost(Post post)throws BadRequestException, InternalServerError{
+    public void createPost(Post post)throws BadRequestException, InternalServerError{
 
         User userPagePosted = checkUserPagePosted(post.getUserPagePosted().getId());
 
@@ -43,7 +43,7 @@ public class PostService {
             post.setUserPagePosted(post.getUserPosted());
         }
         save(post);
-    }*/
+    }
 
     public Post save(Post post)throws BadRequestException{
         if (post != null && post.getId() != null){
@@ -83,7 +83,7 @@ public class PostService {
         }
 
         return userTagged;
-    }
+    }*/
 
     private User checkUserPagePosted(Long idUserPagePosted)throws BadRequestException, InternalServerError{
         User userPagePosted = userDAO.findById(idUserPagePosted);
@@ -109,5 +109,5 @@ public class PostService {
                 throw new BadRequestException("Message contains not valid link.");
             }
         }
-    }*/
+    }
 }

@@ -131,11 +131,11 @@ public class User extends IdEntity{
         return messageReceived;
     }
 
-    /*@JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "userPosted", fetch = FetchType.LAZY, targetEntity = Post.class)
     public List<Post> getPosts() {
         return posts;
-    }*/
+    }
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

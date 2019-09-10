@@ -34,7 +34,7 @@
         <h1>Enter data</h1>
     </div>
 
-    <form id="form">
+    <form id="registration-form">
         <label >First name:
             <input type="text" name="firstName" required>
         </label>
@@ -83,20 +83,35 @@
 <!---->
 <!--<div th:replace="fragments/footer :: footer" />-->
 <script>
-    $("#form").submit(function (e) {
+    /*$("#registration-form").submit(function register() {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/register-user",
+            data: $('#registration-form').serialize(),
+            success:function success() {
+                alert('User registered successfully');
+                window.location.reload(true);
+            },
+            error: function(xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });*/
+    $("#registration-form").submit(function (e) {
         var form = $(this).serialize();
-        debugger;
+        //debugger;
         $.ajax({
             type: "POST",
             url: "/register-user",
             data: form,
             success: function success() {
-                debugger;
+                //debugger;
                 alert("User registered success!");
                 window.location.href = "index.html";
             },
             error: function error(xhr, status, errorThrown) {
-                debugger;
+                //debugger;
                 alert("User registration failed with: " + status + "." + errorThrown + "The user with such email or " +
                     "phone is already registered in the system.");
             }

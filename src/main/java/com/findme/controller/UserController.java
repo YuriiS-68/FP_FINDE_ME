@@ -3,6 +3,8 @@ package com.findme.controller;
 import com.findme.dao.UserDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
+import com.findme.models.RelationshipType;
+import com.findme.models.ReligionType;
 import com.findme.models.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,17 +71,20 @@ public class UserController extends Utils<User> {
             return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
         }
 
-        System.out.println("Input user for registration: - " + user);
-
         try {
-            if (userDAO.findUserByFields(user)) {
-                Date dateRegister = new Date();
-                user.setDateRegistered(dateRegister);
-                user.setDateLastActive(dateRegister);
-                userService.save(user);
-                return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
+            if (userService.validateEnums(user)){
+                if (userDAO.findUserByFields(user)) {
+                    Date dateRegister = new Date();
+                    user.setDateRegistered(dateRegister);
+                    user.setDateLastActive(dateRegister);
+                    userService.save(user);
+                    return new ResponseEntity<>("User registered success! Response server.", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("User with such email or phone number is already registered. Response server.", HttpStatus.BAD_REQUEST);
+                }
+            }
+            else {
+                return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.BAD_REQUEST);
             }
         } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);

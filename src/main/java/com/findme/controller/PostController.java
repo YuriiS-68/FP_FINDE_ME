@@ -28,13 +28,33 @@ public class PostController extends Utils<Post> {
         this.postDAO = postDAO;
     }
 
-    /*@RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain")
+    //1. Проверить находится ли юзер делающий пост онлайн
+    //2. Проверить статус пользователя на странице которого создается пост
+    //3. Если друзья или своя страница, то создаем пост
+    @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain")
     public ResponseEntity<String> addPost(@ModelAttribute Post post, HttpSession session){
         if (post == null){
             return new ResponseEntity<>("The post is not exist.", HttpStatus.BAD_REQUEST);
         }
 
-        System.out.println("Post - " + post);
+        User userPosted = (User) session.getAttribute(String.valueOf(post.getUserPosted().getId()));
+        System.out.println("User posted - " + post.getUserPosted());
+
+        try {
+            if (userPosted == null){
+                return new ResponseEntity<>("The post can not be posted. User is not logged.", HttpStatus.BAD_REQUEST);
+            }
+
+            postService.createPost(post);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (BadRequestException e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
+        }catch (InternalServerError e) {
+            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        /*System.out.println("Post - " + post);
         System.out.println("User posted - " + post.getUserPosted());
 
         try {
@@ -56,8 +76,8 @@ public class PostController extends Utils<Post> {
             return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
         }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }*/
+        }*/
+    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/savePost", produces = "text/plain")
     public @ResponseBody
