@@ -8,6 +8,7 @@ import com.findme.models.User;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +32,8 @@ public class PostController extends Utils<Post> {
     //1. Проверить находится ли юзер делающий пост онлайн
     //2. Проверить статус пользователя на странице которого создается пост
     //3. Если друзья или своя страница, то создаем пост
-    @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain")
-    public ResponseEntity<String> addPost(@ModelAttribute Post post, HttpSession session){
+    @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain", consumes = "application/json")
+    public ResponseEntity<String> addPost(@RequestBody Post post, HttpSession session){
         if (post == null){
             return new ResponseEntity<>("The post is not exist.", HttpStatus.BAD_REQUEST);
         }
@@ -53,30 +54,6 @@ public class PostController extends Utils<Post> {
         }catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        /*System.out.println("Post - " + post);
-        System.out.println("User posted - " + post.getUserPosted());
-
-        try {
-            if (post.getUserPosted() == null || post.getUserPosted().getId() == null){
-                return new ResponseEntity<>("Something problem with user posted.", HttpStatus.BAD_REQUEST);
-            }
-
-            User user = (User) session.getAttribute(String.valueOf(post.getUserPosted().getId()));
-            System.out.println("User - " + user);
-            if (user == null) {
-                return new ResponseEntity<>("The post can not be posted. User is not logged.", HttpStatus.BAD_REQUEST);
-            }
-
-            postService.createPost(post);
-            return new ResponseEntity<>(HttpStatus.OK);
-
-        } catch (BadRequestException e) {
-            System.err.println(e.getMessage());
-            return new ResponseEntity<>("Something is wrong with the input.", HttpStatus.BAD_REQUEST);
-        }catch (InternalServerError e) {
-            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
-        }*/
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/savePost", produces = "text/plain")

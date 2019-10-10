@@ -104,16 +104,19 @@
         <!--@thymesVar id="post" type="com.findme.models.Post"-->
         <form id="post-form">
             <label>Message:
-                <input id="message" name="post">
+                <input type="text" name="message" required>
             </label>
             <label>Location:
-                <input id="location" name="place">
+                <input type="text" name="location" required>
+            </label>
+            <label>Date:
+                <input type="text" name="datePosted" required>
             </label>
             <label>UserPosted
-                <input id="userPostedId" name="userPosted">
+                <input type="text" name="userPosted" required>
             </label>
             <label>UserPagePosted
-                <input id="userPagePostedId" name="userPagePosted">
+                <input type="text" name="userPagePosted" required>
             </label>
             <button type="submit" class="button_post">Create post</button>
         </form>
@@ -123,12 +126,27 @@
         <p>Some one status</p>
     </div>
     <!-- /.right -->
-
 <!-- /.container -->
 <!---->
 <!--<div th:replace="fragments/footer :: footer" />-->
-
     <script>
+        $("#post-form").submit(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/createPost",
+                data: $('#post-form').serialize(),
+                //contentType : 'application/json',
+                success: function success() {
+                    alert("Created post success.");
+                    window.location.href = "profile.html";
+                },
+                error: function error(xhr, status, errorThrown) {
+                    alert("Failed to exit with: " + status + "." + errorThrown);
+                }
+            });
+            e.preventDefault();
+        });
+
         $("#add-friends").click(function (e) {
             var userIdFrom = "50";
             var userIdTo = "90";
@@ -164,26 +182,6 @@
             e.preventDefault();
         });
 
-        $("#post-form").click(function (e) {
-            var form = $(this).serialize();
-            //var idUserPosted = "50";
-            //var idUserPagePosted = "90";
-            debugger;
-            $.ajax({
-                type: "POST",
-                url: "/createPost",
-                data: form /*+ "userPosted=" + idUserPosted + "&userPagePosted=" + idUserPagePosted*/,
-                success: function success() {
-                    debugger;
-                    alert("Created post success.");
-                },
-                error: function error(xhr, status, errorThrown) {
-                    alert("Failed to exit with: " + status + "." + errorThrown);
-                }
-            });
-            e.preventDefault();
-        });
-
         $("#canceled").click(function (e) {
             var userIdFrom = "50";
             var userIdTo = "90";
@@ -201,6 +199,9 @@
             });
             e.preventDefault();
         });
+        //var form = $(this).serialize();
+        //error: function error(xhr) {
+        //    alert("Failed to exit with: " + xhr.responseText + ".");
     </script>
 
 </body>
