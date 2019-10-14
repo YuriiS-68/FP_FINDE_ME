@@ -45,6 +45,7 @@ public class PostService {
         save(post);
     }
 
+    //TODO нет смысла создавать такие короткие по логику методы
     public Post save(Post post)throws BadRequestException{
         if (post != null && post.getId() != null){
             throw new BadRequestException("This Post with ID - " + post.getId() + " can not save in DB.");
@@ -100,6 +101,7 @@ public class PostService {
     }
 
     private void validateMessage(String message)throws BadRequestException{
+        //TODO что это за странный сплит по / ?
         String[] str = message.split("/");
 
         System.out.println(Arrays.toString(str));

@@ -32,8 +32,13 @@ public class PostController extends Utils<Post> {
     //1. Проверить находится ли юзер делающий пост онлайн
     //2. Проверить статус пользователя на странице которого создается пост
     //3. Если друзья или своя страница, то создаем пост
+
+    //TODO produces/consumes лучше не юзать, тебе подходят те что по дефолту. Из-за тоже может и не попадать сюда запрос
     @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain", consumes = "application/json")
+    //TODO тут как раз используй @ModelAttribute , посколько data: $('#post-form').serialize(), шлет данные не в JSON а в параметрах
     public ResponseEntity<String> addPost(@RequestBody Post post, HttpSession session){
+
+        //TODO никогда нал не будет приходить
         if (post == null){
             return new ResponseEntity<>("The post is not exist.", HttpStatus.BAD_REQUEST);
         }
