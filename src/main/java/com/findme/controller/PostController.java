@@ -4,6 +4,7 @@ import com.findme.dao.PostDAO;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerError;
 import com.findme.models.Post;
+import com.findme.models.PostInfo;
 import com.findme.models.User;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,11 @@ public class PostController extends Utils<Post> {
     //1. Проверить находится ли юзер делающий пост онлайн
     //2. Проверить статус пользователя на странице которого создается пост
     //3. Если друзья или своя страница, то создаем пост
-    @RequestMapping(method = RequestMethod.POST, path = "/createPost", produces = "text/plain", consumes = "application/json")
-    public ResponseEntity<String> addPost(@RequestBody Post post, HttpSession session){
-        if (post == null){
-            return new ResponseEntity<>("The post is not exist.", HttpStatus.BAD_REQUEST);
-        }
+    @RequestMapping(method = RequestMethod.POST, path = "/createPost")
+    public ResponseEntity<String> addPost(@ModelAttribute PostInfo postInfo, HttpSession session){
 
-        User userPosted = (User) session.getAttribute(String.valueOf(post.getUserPosted().getId()));
-        System.out.println("User posted - " + post.getUserPosted());
+        User userPosted = (User) session.getAttribute(String.valueOf(postInfo.getIdUserPosted()));
+        System.out.println("User posted - " + userPosted);
 
         try {
             if (userPosted == null){

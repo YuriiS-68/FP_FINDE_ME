@@ -57,6 +57,6 @@ public class AcceptedHandler extends RelationshipHandler {
         if (id == null){
             throw new BadRequestException("ID does not exist.");
         }
-        return relationshipDAO.getQuantityFriends(id, RelationshipStatusType.ACCEPTED) < 10;
+        return relationshipDAO.getQuantityFriends(id, RelationshipStatusType.ACCEPTED) < 100;
     }
 }
