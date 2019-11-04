@@ -38,15 +38,15 @@ public class UserController extends Utils<User> {
             User user = userDAO.findById(Long.parseLong(userId));
             if (user == null) {
                 model.addAttribute(userId);
-                return "errors/exception_npe";
+                return "errors/null_pointer-page";
             }
             model.addAttribute("user", user);
-            return "profile";
+            return "profile-page";
         } catch (NumberFormatException e) {
             model.addAttribute(userId);
-            return "errors/exception_number_format";
+            return "errors/number_format-page";
         } catch (InternalServerError e) {
-            return "errors/exception_internal_server";
+            return "errors/internal_server-page";
         }
     }
 
@@ -57,7 +57,7 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public String registerPage() {
-        return "register";
+        return "register-page";
     }
 
     @RequestMapping(path = "/user-page", method = RequestMethod.GET)
@@ -95,12 +95,12 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/login-in", method = RequestMethod.GET)
     public String loginPage() {
-        return "login-in";
+        return "login-page";
     }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logoutPage() {
-        return "logout";
+        return "logout-page";
     }
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
