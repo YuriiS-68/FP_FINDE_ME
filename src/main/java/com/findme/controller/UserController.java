@@ -55,9 +55,9 @@ public class UserController extends Utils<User> {
         return "index";
     }
 
-    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    @RequestMapping(path = "/register-new_user-page", method = RequestMethod.GET)
     public String registerPage() {
-        return "register-page";
+        return "register-new_user-page";
     }
 
     @RequestMapping(path = "/user-page", method = RequestMethod.GET)
@@ -67,24 +67,19 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
     public ResponseEntity<String> registerUser(@ModelAttribute User user) {
-        if (user == null) {
-            return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
-        }
-
         try {
-            if (userService.validateEnums(user)){
-                if (userDAO.findUserByFields(user)) {
+            if (userDAO.findUserByFields(user)){
+                if (userService.validateEnums(user)){
                     Date dateRegister = new Date();
                     user.setDateRegistered(dateRegister);
                     user.setDateLastActive(dateRegister);
                     userService.save(user);
-                    return new ResponseEntity<>("User registered success! Response server.", HttpStatus.OK);
+                    return new ResponseEntity<>("User registered success!", HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("User with such email or phone number is already registered. Response server.", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.BAD_REQUEST);
                 }
-            }
-            else {
-                return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
             }
         } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -93,12 +88,12 @@ public class UserController extends Utils<User> {
         }
     }
 
-    @RequestMapping(path = "/login-in", method = RequestMethod.GET)
+    @RequestMapping(path = "/login-page", method = RequestMethod.GET)
     public String loginPage() {
         return "login-page";
     }
 
-    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    @RequestMapping(path = "/logout-page", method = RequestMethod.GET)
     public String logoutPage() {
         return "logout-page";
     }

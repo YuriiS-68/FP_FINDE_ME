@@ -23,12 +23,10 @@ public class UserDAO extends GeneralDAO<User> {
 
     @SuppressWarnings("unchecked")
     public boolean findUserByFields(User user) throws InternalServerError {
-        System.out.println("Input user in DAO - " + user);
         NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(FIND_USER_WITH_FIELDS_EMAIL_AND_PHONE, User.class);
 
         try {
             user = query.setParameter(1, user.getPhone()).setParameter(2, user.getEmail()).uniqueResult();
-            System.out.println("User after query -" + user);
         }catch (NoResultException e){
             System.err.println(e.getMessage());
             throw e;
