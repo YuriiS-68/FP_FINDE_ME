@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BadRequestException</title>
+</head>
+  <body>
+
+    <!--/*@thymesVar id="userId" type="com.findme.controller"*/-->
+    <h1>Bad Request Exception 404</h1>
+
+    <div class="container">
+        <p>Data entered is wrong, user ID - <span th:text="${userId}">.</span>
+    </div>
+
+  </body>
+
+  <style>
+      .container{
+          float: left;
+      }
+  </style>
+
+</html>
