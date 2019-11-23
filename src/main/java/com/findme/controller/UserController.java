@@ -44,7 +44,7 @@ public class UserController extends Utils<User> {
             return "profile-page";
         } catch (NumberFormatException e) {
             model.addAttribute(userId);
-            return "errors/bad-request-page";
+            return "errors/not-found-page";
         } catch (InternalServerError e) {
             return "errors/internal-server-page";
         }
@@ -76,7 +76,7 @@ public class UserController extends Utils<User> {
                     userService.save(user);
                     return new ResponseEntity<>("User registered success!", HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.NOT_FOUND);
                 }
             } else {
                 return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
@@ -102,13 +102,13 @@ public class UserController extends Utils<User> {
     public ResponseEntity<String> loginUser(HttpSession session, @RequestParam(value = "email") String login,
                                             @RequestParam(value = "password") String pass) {
         if (login == null || pass == null) {
-            return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Input is not correct.", HttpStatus.NOT_FOUND);
         }
 
         try {
             User user = userDAO.findUserByEmail(login);
             if (user == null) {
-                return new ResponseEntity<>("Login or password is not correct.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Login or password is not correct.", HttpStatus.NOT_FOUND);
             }
 
             User userInSession = (User) session.getAttribute(String.valueOf(user.getId()));
@@ -131,14 +131,14 @@ public class UserController extends Utils<User> {
     @RequestMapping(path = "/logout-user", method = RequestMethod.GET)
     public ResponseEntity<String> logout(HttpSession session, @RequestParam(value = "email") String login){
         if (login == null){
-            return new ResponseEntity<>("Input is not correct.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Input is not correct.", HttpStatus.NOT_FOUND);
         }
 
         try {
             User user = userDAO.findUserByEmail(login);
 
             if (user == null){
-                return new ResponseEntity<>("Login is not correct.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Login is not correct.", HttpStatus.NOT_FOUND);
             }
 
             if (session.getAttribute(String.valueOf(user.getId())) != null){

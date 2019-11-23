@@ -2,16 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>NumberFormatException</title>
+    <title>NotFoundException</title>
 </head>
 <body>
 
-<h1>Number Format Exception 400</h1>
+<!--/*@thymesVar id="userId" type="com.findme.controller"*/-->
+<h1>Not Found Exception 404</h1>
 
 <div class="container">
-        <!--/*@thymesVar id="userId" type="com.findme.controller"*/-->
-    <p>Data entered in wrong format - <span th:text="${userId}">.</span>
-
+    <p>User ID - <span th:text="${userId}"> not found.</span>
 </div>
 
 </body>
