@@ -76,7 +76,7 @@ public class UserController extends Utils<User> {
                     userService.save(user);
                     return new ResponseEntity<>("User registered success!", HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
