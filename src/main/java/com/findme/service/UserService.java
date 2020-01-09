@@ -7,8 +7,11 @@ import com.findme.models.RelationshipType;
 import com.findme.models.ReligionType;
 import com.findme.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,7 +34,23 @@ public class UserService {
         return user;
     }
 
-    public boolean validateEnums(User user){
+    public boolean setDateRegisterUser(User user)throws BadRequestException {
+        if (validateEnums(user)){
+            Date dateRegister = new Date();
+            user.setDateRegistered(dateRegister);
+            user.setDateLastActive(dateRegister);
+            try {
+                save(user);
+            } catch (BadRequestException e) {
+                e.printStackTrace();
+            }
+            return true;
+        } else {
+            throw new BadRequestException("Relationship or religion data entered incorrectly.");
+        }
+    }
+
+    private boolean validateEnums(User user){
         return user.getReligion().equals(ReligionType.Christian) || user.getReligion().equals(ReligionType.Muslim) ||
                 user.getReligion().equals(ReligionType.Catholic) || user.getReligion().equals(ReligionType.Buddhist) &&
                 user.getRelationship().equals(RelationshipType.married) || user.getRelationship().equals(RelationshipType.single);

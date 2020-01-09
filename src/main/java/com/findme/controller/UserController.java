@@ -69,14 +69,11 @@ public class UserController extends Utils<User> {
     public ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {
             if (userDAO.findUserByFields(user)){
-                if (userService.validateEnums(user)){
-                    Date dateRegister = new Date();
-                    user.setDateRegistered(dateRegister);
-                    user.setDateLastActive(dateRegister);
-                    userService.save(user);
+                if (userService.setDateRegisterUser(user)){
                     return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("Relationship or religion data entered incorrectly. ", HttpStatus.BAD_REQUEST);
+                }
+                else {
+                    return new ResponseEntity<>("Relationship or religion data entered incorrectly.", HttpStatus.BAD_REQUEST);
                 }
             } else {
                 return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
@@ -199,13 +196,13 @@ public class UserController extends Utils<User> {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/updateUser", produces = "text/plain")
     public @ResponseBody
-    String update(HttpServletRequest req)throws IOException, BadRequestException{
+    ResponseEntity<String> update(HttpServletRequest req)throws IOException, BadRequestException{
         User user = mappingObject(req);
         long inputId = Long.parseLong(req.getParameter("userId"));
 
         try{
             if (userDAO.findById(inputId) == null){
-                return "User with ID - " + inputId + " does not exist in the DB";
+                return new ResponseEntity<>("User with ID - " + inputId + " does not exist in the DB", HttpStatus.NOT_FOUND) ;
             }
             else {
                 userService.update(user);
@@ -215,9 +212,9 @@ public class UserController extends Utils<User> {
             throw  e;
         } catch (InternalServerError e) {
             System.err.println(e.getMessage());
-            return "Something went wrong...";
+            return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return "User update success";
+        return new ResponseEntity<>("User update success", HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/deleteUser", produces = "text/plain")
