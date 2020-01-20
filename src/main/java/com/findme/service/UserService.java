@@ -24,33 +24,24 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public User save(User user)throws BadRequestException{
-        if (user != null && user.getId() != null){
-            throw new BadRequestException("This User with ID - " + user.getId() + " can not save in DB.");
+    public User save(User user) throws BadRequestException, InternalServerError {
+        if (userDAO.findUserByFields(user) != null){
+            throw new BadRequestException("User with email " + user.getEmail() + " or phone number " + user.getPhone() + " is already registered.");
         }
-        else {
-            userDAO.save(user);
-        }
-        return user;
+        return userDAO.save(user);
     }
 
-    public boolean setDateRegisterUser(User user)throws BadRequestException {
-        if (validateEnums(user)){
-            Date dateRegister = new Date();
-            user.setDateRegistered(dateRegister);
-            user.setDateLastActive(dateRegister);
-            try {
-                save(user);
-            } catch (BadRequestException e) {
-                e.printStackTrace();
-            }
-            return true;
-        } else {
+    public void registerNewUser(User user) throws BadRequestException, InternalServerError {
+        if (!validateInputDate(user)){
             throw new BadRequestException("Relationship or religion data entered incorrectly.");
         }
+        Date dateRegister = new Date();
+        user.setDateRegistered(dateRegister);
+        user.setDateLastActive(dateRegister);
+        save(user);
     }
 
-    private boolean validateEnums(User user){
+    private boolean validateInputDate(User user){
         return user.getReligion().equals(ReligionType.Christian) || user.getReligion().equals(ReligionType.Muslim) ||
                 user.getReligion().equals(ReligionType.Catholic) || user.getReligion().equals(ReligionType.Buddhist) &&
                 user.getRelationship().equals(RelationshipType.married) || user.getRelationship().equals(RelationshipType.single);

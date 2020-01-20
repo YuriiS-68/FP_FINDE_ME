@@ -22,7 +22,7 @@ public class UserDAO extends GeneralDAO<User> {
             " WHERE ID_USER_TO = ? AND STATUS_TYPE = 'FRIEND_REQUEST'";
 
     @SuppressWarnings("unchecked")
-    public boolean findUserByFields(User user) throws InternalServerError {
+    public User findUserByFields(User user) throws InternalServerError {
         NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(FIND_USER_WITH_FIELDS_EMAIL_AND_PHONE, User.class);
 
         try {
@@ -31,7 +31,7 @@ public class UserDAO extends GeneralDAO<User> {
             System.err.println(e.getMessage());
             throw e;
         }
-        return user == null;
+        return user;
     }
 
     @SuppressWarnings("unchecked")

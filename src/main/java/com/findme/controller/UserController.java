@@ -68,16 +68,8 @@ public class UserController extends Utils<User> {
     @RequestMapping(path = "/register-user", method = RequestMethod.POST)
     public ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {
-            if (userDAO.findUserByFields(user)){
-                if (userService.setDateRegisterUser(user)){
-                    return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-                }
-                else {
-                    return new ResponseEntity<>("Relationship or religion data entered incorrectly.", HttpStatus.BAD_REQUEST);
-                }
-            } else {
-                return new ResponseEntity<>("User with such email or phone number is already registered.", HttpStatus.BAD_REQUEST);
-            }
+            userService.registerNewUser(user);
+            return new ResponseEntity<>("User registered success!", HttpStatus.OK);
         } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (BadRequestException e) {
@@ -183,11 +175,11 @@ public class UserController extends Utils<User> {
 
     @RequestMapping (method = RequestMethod.POST, value = "/saveUser", produces = "text/plain")
     public @ResponseBody
-    String save(HttpServletRequest req) throws IOException, BadRequestException {
+    String save(HttpServletRequest req) throws IOException, BadRequestException, InternalServerError {
         User user = mappingObject(req);
         try {
             userService.save(user);
-        }catch (BadRequestException e){
+        }catch (BadRequestException | InternalServerError e){
             System.err.println(e.getMessage());
             throw e;
         }
