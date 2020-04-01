@@ -39,7 +39,7 @@ public class User extends IdEntity{
     }
 
     @Id
-    @SequenceGenerator(name = "USER_SQ", sequenceName = "USER_FM_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "USER_SQ", sequenceName = "USERS1_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_SQ")
     @Column(name = "USER_ID")
     @Override
@@ -140,7 +140,7 @@ public class User extends IdEntity{
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "USERS1_RELATIONSHIP", joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "RELATIONSHIP_ID"))
+            inverseJoinColumns = @JoinColumn(name = "RELATION_ID"))
     public Set<Relationship> getStatuses() {
         return statuses;
     }

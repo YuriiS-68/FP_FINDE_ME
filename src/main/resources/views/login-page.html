@@ -43,8 +43,8 @@
     </div>
     <script>
         $("#login-form").click(function (e) {
-            var login = $('#login').val();
-            var pass = $('#pass').val();
+            const login = $('#login').val();
+            const pass = $('#pass').val();
             $.ajax({
                 type: "GET",
                 url: "/login",

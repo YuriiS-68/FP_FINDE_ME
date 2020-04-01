@@ -1,5 +1,6 @@
 package com.findme.config;
 
+import com.findme.controller.PostController;
 import com.findme.dao.PostDAO;
 import com.findme.dao.RelationshipDAO;
 import com.findme.dao.UserDAO;
@@ -60,9 +61,16 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public PostController postController(){
+        PostController postController;
+        postController = new PostController(postService(), userDAO());
+        return postController;
+    }
+
+    @Bean
     public PostService postService(){
         PostService postService;
-        postService = new PostService(postDAO(), userDAO(), relationshipDAO());
+        postService = new PostService(postDAO(), relationshipDAO());
         return postService;
     }
 
@@ -145,7 +153,7 @@ public class AppConfig implements WebMvcConfigurer {
     public DriverManagerDataSource dataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-        dataSource.setUrl("jdbc:oracle:thin:@gc-test.c4lz1tpzgnkv.eu-central-1.rds.amazonaws.com:1521:ORCL");
+        dataSource.setUrl("jdbc:oracle:thin:@gromcode.cs1v5pkvp5p9.eu-central-1.rds.amazonaws.com:1521:ORCL");
         dataSource.setUsername("main");
         dataSource.setPassword("ifgjrkzr");
         return dataSource;

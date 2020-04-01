@@ -27,31 +27,33 @@ public class RelationshipService {
         this.handlerChain = handlerChain;
     }
 
-    public void setRelationship(String userIdTo, String userIdFrom, HttpSession session)throws BadRequestException, InternalServerError{
-        User userFrom = (User) session.getAttribute(userIdFrom);
+    public void setRelationship(String idUserTo, String idUserFrom, HttpSession session)throws BadRequestException, InternalServerError{
+        User userFrom = (User) session.getAttribute("userLogged");
+        System.out.println("User in session userFrom - " + userFrom);
         if (userFrom == null){
-            throw new BadRequestException("User with ID " + userIdFrom + " is not logged in.");
+            throw new BadRequestException("User with ID " + idUserFrom + " is not logged in.");
         }
 
-        User userTo = userDAO.findById(Long.parseLong(userIdTo));
+        User userTo = userDAO.findById(Long.parseLong(idUserTo));
         if (userTo == null){
-            throw new BadRequestException("User with ID " + userIdTo + " is not found in DB.");
+            throw new BadRequestException("User with ID " + idUserTo + " is not found in DB.");
         }
 
         Relationship relationshipFind = relationshipDAO.getRelationship(userFrom.getId(), userTo.getId());
+        System.out.println("relationshipFind - " + relationshipFind);
         try {
             if (relationshipFind == null){
                 Relationship relationship = new Relationship();
                 relationship.setUserFrom(userFrom);
                 relationship.setUserTo(userTo);
                 relationship.setStatusType(RelationshipStatusType.REQUESTED);
-                save(sendRequest(Long.parseLong(userIdFrom), relationship));
+                save(sendRequest(Long.parseLong(idUserFrom), relationship));
             }
             else if (relationshipFind.getStatusType().equals(RelationshipStatusType.CANCELED) ||
                     relationshipFind.getStatusType().equals(RelationshipStatusType.DECLINED) ||
                     relationshipFind.getStatusType().equals(RelationshipStatusType.DELETED)){
                 relationshipFind.setStatusType(RelationshipStatusType.REQUESTED);
-                relationshipDAO.update(sendRequest(Long.valueOf(userIdFrom), relationshipFind));
+                relationshipDAO.update(sendRequest(Long.valueOf(idUserFrom), relationshipFind));
             }
             else {
                 throw new BadRequestException("Something is wrong with the input.");
@@ -61,22 +63,30 @@ public class RelationshipService {
         }
     }
 
-    public void setRelationshipByStatus(String status, String userIdTo, String userIdFrom, HttpSession session) throws BadRequestException, InternalServerError {
-        if (status == null || userIdTo == null || userIdFrom == null){
+    public void setRelationshipByStatus(String status, String idUserTo, String idUserFrom, HttpSession session) throws BadRequestException, InternalServerError {
+        if (status == null || idUserTo == null || idUserFrom == null){
             throw  new BadRequestException("Status or userIdTo or userIdFrom is not exist.");
         }
 
-        User userFrom = (User) session.getAttribute(userIdFrom);
-        User userTo = (User) session.getAttribute(userIdTo);
-        Relationship relationshipFind = relationshipDAO.getRelationship(Long.valueOf(userIdFrom), Long.valueOf(userIdTo));
+        User userInSession = (User) session.getAttribute("userLogged");
+        User userFrom = null;
+        User userTo = null;
+        if (userInSession.getId().equals(Long.parseLong(idUserFrom))){
+            userFrom = userInSession;
+        }
+        if (userInSession.getId().equals(Long.parseLong(idUserTo))){
+            userTo = userInSession;
+        }
+
+        Relationship relationshipFind = relationshipDAO.getRelationship(Long.valueOf(idUserFrom), Long.valueOf(idUserTo));
 
         try {
             if (userTo != null){
-                handlerChain.execute(relationshipFind, userTo, status, Long.valueOf(userIdTo), Long.valueOf(userIdFrom));
+                handlerChain.execute(relationshipFind, userTo, status, Long.valueOf(idUserTo), Long.valueOf(idUserFrom));
             }
 
             if (userFrom != null){
-                handlerChain.execute(relationshipFind, userFrom, status, Long.valueOf(userIdTo), Long.valueOf(userIdFrom));
+                handlerChain.execute(relationshipFind, userFrom, status, Long.valueOf(idUserTo), Long.valueOf(idUserFrom));
             }
         }catch (InternalServerError e) {
             throw new InternalServerError("Something went wrong...");
@@ -97,12 +107,23 @@ public class RelationshipService {
         }
     }
 
+    /*public User choiceUsers(String idUserTo, String idUserFrom, HttpSession session)throws BadRequestException{
+        User userInSession = (User) session.getAttribute("userLogged");
+
+        if (userInSession.getId().equals(Long.parseLong(idUserFrom)) || userInSession.getId().equals(Long.parseLong(idUserTo))) {
+            return userInSession;
+        }
+        else{
+            throw new BadRequestException("User is not selected because he is not in session.");
+        }
+    }*/
+
     private Relationship sendRequest(Long idUser, Relationship relationship) throws BadRequestException, InternalServerError {
         if (idUser == null || relationship == null){
             throw new BadRequestException("User or relationship is not found.");
         }
 
-        if (checkingNumberRequested(idUser)){
+        if (checkingQuantityRequested(idUser)){
             relationship.setStatusType(RelationshipStatusType.REQUESTED);
         }
         else {
@@ -111,7 +132,7 @@ public class RelationshipService {
         return relationship;
     }
 
-    private boolean checkingNumberRequested(Long id) throws BadRequestException, InternalServerError{
+    private boolean checkingQuantityRequested(Long id) throws BadRequestException, InternalServerError{
         if (id == null){
             throw new BadRequestException("ID does not exist.");
         }

@@ -24,7 +24,7 @@ public class HandlerChain {
         canceledHandlerObj.setNextHandler(deletedHandlerObj);
     }
 
-    public void execute(Relationship relationship, User user, String status, Long userIdTo, Long idUserFrom)throws BadRequestException, InternalServerError{
-        chain.setRelationship(relationship, user, status, userIdTo, idUserFrom);
+    public void execute(Relationship relationship, User user, String status, Long idUserTo, Long idUserFrom)throws BadRequestException, InternalServerError{
+        chain.setRelationship(relationship, user, status, idUserTo, idUserFrom);
     }
 }

@@ -16,6 +16,7 @@ public class UserDAO extends GeneralDAO<User> {
 
     private static final String FIND_USER_WITH_FIELDS_EMAIL_AND_PHONE = "SELECT * FROM USERS1 WHERE PHONE = ? OR EMAIL = ?";
     private static final String FIND_USER_BY_EMAIL = "SELECT * FROM USERS1 WHERE EMAIL = ?";
+    private static final String FIND_USER_BY_ID = "SELECT * FROM USERS1 WHERE USER_ID = ?";
     private static final String GET_USERS_TO = "SELECT * FROM USERS1 JOIN RELATIONSHIP ON RELATIONSHIP.ID_USER_TO = USERS1.USER_ID" +
             " WHERE ID_USER_FROM = ? AND STATUS_TYPE = 'FRIEND_REQUEST'";
     private static final String GET_USERS_FROM = "SELECT * FROM USERS1 JOIN RELATIONSHIP ON RELATIONSHIP.ID_USER_FROM = USERS1.USER_ID" +
@@ -46,6 +47,19 @@ public class UserDAO extends GeneralDAO<User> {
         }
         return user;
     }
+
+    /*@SuppressWarnings("unchecked")
+    public User findUserById(Long id) throws InternalServerError {
+        User user;
+        NativeQuery<User> query = (NativeQuery<User>) getEntityManager().createNativeQuery(FIND_USER_BY_ID, User.class);
+        try {
+            user = query.setParameter(1, id).uniqueResult();
+        }catch (NoResultException e){
+            System.err.println(e.getMessage());
+            throw e;
+        }
+        return user;
+    }*/
 
     @SuppressWarnings("unchecked")
     public List<User> getUsers(long userId, String word)throws BadRequestException, InternalServerError {

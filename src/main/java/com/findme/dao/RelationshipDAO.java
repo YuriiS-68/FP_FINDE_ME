@@ -22,9 +22,9 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
     private static final String GET_STATUS_BETWEEN_USERS = "SELECT statusType FROM Relationship s WHERE s.userFrom.id = :idFromParam AND s.userTo.id = :idToParam";
 
     public String getStatusBetweenUsers(Long idUserFrom, Long idUserTo)throws InternalServerError{
-        String status;
+        RelationshipStatusType statusType;
         try {
-            status = getEntityManager().createQuery(GET_STATUS_BETWEEN_USERS, String.class)
+            statusType = getEntityManager().createQuery(GET_STATUS_BETWEEN_USERS, RelationshipStatusType.class)
                     .setParameter("idFromParam", idUserFrom)
                     .setParameter("idToParam", idUserTo)
                     .getSingleResult();
@@ -32,7 +32,7 @@ public class RelationshipDAO extends GeneralDAO<Relationship> {
             System.err.println(e.getMessage());
             throw e;
         }
-        return status;
+        return statusType.toString();
     }
 
     public int getQuantityHoursAfterAccepted(Long idUserFrom, Long idUserTo, RelationshipStatusType status)throws InternalServerError{

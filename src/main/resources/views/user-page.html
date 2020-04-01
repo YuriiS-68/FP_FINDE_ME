@@ -5,28 +5,39 @@
     <title>My page</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <style>
+        .container{
+            max-width: 1980px;
+        }
         .left{
             float: left;
-            width: 400px;
+            width: 390px;
             height: 480px;
+        }
+        .starter-template{
+            height: 300px;
+            border: 2px solid black;
         }
         .user-photo {
             width: 100%;
         }
         .center{
             display: inline-block;
-            margin-left: 140px;
+            margin-left: 240px;
             width: 500px;
             height: 600px;
+            text-align: center;
+            font-size: 30px;
+            border: 2px solid yellow;
         }
         .right {
             display: inline-block;
             float: right;
-            margin-right: 515px;
+            margin-right: 280px;
             width: 200px;
             height: 300px;
             text-align: center;
             font-size: 25px;
+            border: 2px solid palegreen;
         }
         button {
             width: 120px;
@@ -36,64 +47,69 @@
             background-color: transparent;
             border: 2px solid green;
         }
-        .btn{
-            margin-top: 50px;
+        .message{
+            margin-top: 20px;
+            margin-bottom: 20px;
             border: 2px solid blue;
         }
         .button {
-            margin-top: 25px;
+            margin-top: 20px;
+            margin-right: 8px;
         }
         .button_del {
-            margin-top: 25px;
+            margin-right: 8px;
             border: 2px solid red;
         }
         .button_post{
-            margin-top: 25px;
+
             border: 2px solid darkmagenta;
         }
         .request {
-            margin-top: 25px;
+
             border: 2px solid orange;
         }
     </style>
 </head>
 <body>
-<div class="left">
-    <div class="starter-template">
-        <h1>Photo</h1>
-        <img class="user-photo" src="#" alt="photo">
+<div class="container">
+    <div class="left">
+        <div class="starter-template">
+            <h1>Photo</h1>
+            <img class="user-photo" src="#" alt="photo">
+        </div>
+        <!-- /.starter-template -->
+
+        <div class="buttons">
+            <button id="accept" class="button">Accept request</button>
+            <button id="delete" class="button_del">Delete from friends</button>
+            <button id="declined" class="request">Decline request</button>
+            <button class="message">Send message</button>
+            <div>
+                <button id="create" class="button_post">Create post</button>
+            </div>
+        </div>
+        <!-- /.buttons -->
     </div>
-
-    <div>
-        <button id="accept" class="button">Accept request</button>
-        <button id="delete" class="button_del">Delete from friends</button>
-        <button id="create" class="button_post">Create post</button>
-        <button class="btn">Send message</button>
+    <!-- /.left -->
+    <div class="center">
+        <p>Some one text</p>
     </div>
-
-    <div>
-        <button id="declined" class="request">Decline request</button>
+    <!-- /.center -->
+    <div id="relationship-status" class="right">
+        <p>Some one status</p>
     </div>
+    <!-- /.right -->
 </div>
-
-<div class="center">
-
-</div>
-
-<div id="relationship-status" class="right">
-    <p>Some one status</p>
-</div>
-<!-- /.right -->
-
+<!-- /.container -->
 <script>
     $("#accept").click(function (e) {
-        var userIdFrom = "50";
-        var userIdTo = "90";
-        var status = "ACCEPTED";
+        const idUserFrom = "1";
+        const idUserTo = "21";
+        const status = "ACCEPTED";
         $.ajax({
             type: "POST",
             url: "/update-relationship",
-            data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+            data: "idUserFrom=" + idUserFrom + "&idUserTo=" + idUserTo + "&status=" + status,
             success: function success() {
                 alert("Updated relationship success.");
             },
@@ -105,13 +121,13 @@
     });
 
     $("#delete").click(function (e) {
-        var userIdFrom = "50";
-        var userIdTo = "90";
-        var status = "DELETED";
+        const idUserFrom = "1";
+        const idUserTo = "21";
+        const status = "DELETED";
         $.ajax({
             type: "POST",
             url: "/update-relationship",
-            data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+            data: "idUserFrom=" + idUserFrom + "&idUserTo=" + idUserTo + "&status=" + status,
             success: function success() {
                 alert("Updated relationship success.");
             },
@@ -123,13 +139,13 @@
     });
 
     $("#declined").click(function (e) {
-        var userIdFrom = "50";
-        var userIdTo = "90";
-        var status = "DECLINED";
+        const idUserFrom = "1";
+        const idUserTo = "21";
+        const status = "DECLINED";
         $.ajax({
             type: "POST",
             url: "/update-relationship",
-            data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+            data: "idUserFrom=" + idUserFrom + "&idUserTo=" + idUserTo + "&status=" + status,
             success: function success() {
                 alert("Updated relationship success.");
             },

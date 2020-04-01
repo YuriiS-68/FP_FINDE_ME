@@ -35,10 +35,11 @@ public class RelationshipController extends Utils<Relationship> {
     //3. удалить из друзей, статус Друзья, тогда статус меняется на Удалён из друзей
 
     @RequestMapping(path = "/add-friends", method = RequestMethod.POST)
-    public ResponseEntity<String> addRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo){
+    public ResponseEntity<String> addRelationship(HttpSession session, @RequestParam String idUserFrom, @RequestParam String idUserTo){
+        System.out.println("Start method addRelationship.");
         try {
-            relationshipService.validationInputData(userIdFrom, userIdTo, session);
-            relationshipService.setRelationship(userIdTo, userIdFrom, session);
+            relationshipService.validationInputData(idUserFrom, idUserTo, session);
+            relationshipService.setRelationship(idUserTo, idUserFrom, session);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (InternalServerError e) {
             return new ResponseEntity<>("Something went wrong...", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -49,15 +50,23 @@ public class RelationshipController extends Utils<Relationship> {
     }
 
     @RequestMapping(path = "/update-relationship", method = RequestMethod.POST)
-    public ResponseEntity<String> updateRelationship(HttpSession session, @RequestParam String userIdFrom, @RequestParam String userIdTo,
+    public ResponseEntity<String> updateRelationship(HttpSession session, @RequestParam String idUserFrom, @RequestParam String idUserTo,
                                    @RequestParam String status){
         try {
-            relationshipService.validationInputData(userIdFrom, userIdTo, session);
-            User userFrom = (User) session.getAttribute(userIdFrom);
-            User userTo = (User) session.getAttribute(userIdTo);
+            relationshipService.validationInputData(idUserFrom, idUserTo, session);
+
+            User userInSession = (User) session.getAttribute("userLogged");
+            User userFrom = null;
+            User userTo = null;
+            if (userInSession.getId().equals(Long.parseLong(idUserFrom))){
+                userFrom = userInSession;
+            }
+            if (userInSession.getId().equals(Long.parseLong(idUserTo))){
+                userTo = userInSession;
+            }
 
             if (userTo != null || userFrom != null) {
-                relationshipService.setRelationshipByStatus(status, userIdTo, userIdFrom, session);
+                relationshipService.setRelationshipByStatus(status, idUserTo, idUserFrom, session);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {

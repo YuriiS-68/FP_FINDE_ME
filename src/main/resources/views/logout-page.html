@@ -39,7 +39,7 @@
 </div>
 <script>
     $("#exit").click(function (e) {
-        var login = $('#login').val();
+        const login = $('#login').val();
         $.ajax({
             type: "GET",
             url: "/logout-user",

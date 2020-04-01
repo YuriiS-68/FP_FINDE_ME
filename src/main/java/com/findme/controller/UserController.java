@@ -91,23 +91,23 @@ public class UserController extends Utils<User> {
     public ResponseEntity<String> loginUser(HttpSession session, @RequestParam(value = "email") String login,
                                             @RequestParam(value = "password") String pass) {
         if (login == null || pass == null) {
-            return new ResponseEntity<>("Input is not correct.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Input data is not correct.", HttpStatus.NOT_FOUND);
         }
 
         try {
             User user = userDAO.findUserByEmail(login);
             if (user == null) {
-                return new ResponseEntity<>("Login or password is not correct.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Login is not correct.", HttpStatus.NOT_FOUND);
             }
 
-            User userInSession = (User) session.getAttribute(String.valueOf(user.getId()));
+            User userInSession = (User) session.getAttribute("userLogged");
 
             if (userInSession != null) {
                 return new ResponseEntity<>("User is already logged in.", HttpStatus.BAD_REQUEST);
             }
 
             if (user.getEmail().equals(login) && user.getPassword().equals(pass)) {
-                session.setAttribute(String.valueOf(user.getId()), user);
+                session.setAttribute( "userLogged", user);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("This user can not login.", HttpStatus.BAD_REQUEST);
@@ -130,8 +130,8 @@ public class UserController extends Utils<User> {
                 return new ResponseEntity<>("Login is not correct.", HttpStatus.NOT_FOUND);
             }
 
-            if (session.getAttribute(String.valueOf(user.getId())) != null){
-                session.removeAttribute(String.valueOf(user.getId()));
+            if (session.getAttribute("userLogged") != null){
+                session.removeAttribute("userLogged");
                 return new ResponseEntity<>(HttpStatus.OK);
             }
             else {

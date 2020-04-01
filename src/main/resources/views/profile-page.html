@@ -4,19 +4,28 @@
     <title>Find me</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <style>
+        .container{
+            max-width: 1980px;
+        }
         .left{
             float: left;
-            width: 400px;
+            width: 390px;
             height: 480px;
+        }
+        .starter-template{
+            height: 300px;
+            border: 2px solid black;
         }
         .user-photo {
             width: 100%;
         }
         .center{
             display: inline-block;
-            margin-left: 140px;
+            margin-left: 240px;
             width: 500px;
             height: 600px;
+            text-align: center;
+            border: 2px solid yellow;
         }
         .down{
             display: inline-block;
@@ -28,7 +37,7 @@
         .right {
             display: inline-block;
             float: right;
-            margin-right: 515px;
+            margin-right: 280px;
             width: 200px;
             height: 300px;
             text-align: center;
@@ -43,8 +52,9 @@
             background-color: transparent;
             border: 2px solid green;
         }
-        .btn{
-            margin-top: 50px;
+        .message{
+            margin-top: 20px;
+            margin-bottom: 20px;
             border: 2px solid blue;
         }
         .button {
@@ -68,66 +78,69 @@
 
     <!--<div th:replace="fragments/header :: header"></div>-->
 
-    <div class="left">
-        <div class="starter-template">
-            <h1>Photo</h1>
-            <img class="user-photo" src="#" alt="photo">
+    <div class="container">
+        <!--<div th:replace="fragments/header :: header"></div>-->
+
+        <div class="left">
+            <div class="starter-template">
+                <h1>Photo</h1>
+                <img class="user-photo" src="#" alt="photo">
+            </div>
+
+            <div>
+                <button id="add-friends" class="button">Add in friends</button>
+                <button id="delete" class="button_del">Delete from friends</button>
+                <button id="canceled" class="request">Cancel request</button>
+                <div>
+                    <button class="message">Send message</button>
+                </div>
+            </div>
+        </div>
+        <!-- /.left -->
+
+        <div class="center">
+            <!--/*@thymesVar id="user" type="com.findme.models.User"*/-->
+            <p th:text="${user.getFirstName()}"></p>
+            <p th:text="${user.getLastName()}"></p>
+            <p th:text="${user.getPhone()}"></p>
+            <p th:text="${user.getCountry()}"></p>
+            <p th:text="${user.getCity()}"></p>
+            <p th:text="${user.getAge()}"></p>
+            <p th:text="${user.getDateRegistered()}"></p>
+            <p th:text="${user.getDateLastActive()}"></p>
+            <p th:text="${user.getReligion()}"></p>
+            <p th:text="${user.getSchool()}"></p>
+            <p th:text="${user.getUniversity()}"></p>
         </div>
 
-        <div>
-            <button id="add-friends" class="button">Add in friends</button>
-            <button id="delete" class="button_del">Delete from friends</button>
-            <button class="btn">Send message</button>
+        <!--<div class="down">-->
+            <!--@thymesVar id="postInfo" type="com.findme.models.PostInfo"-->
+            <!--<form id="post-form">
+                <label>Message:
+                    <input type="text" name="message" required>
+                </label>
+                <label>Location:
+                    <input type="text" name="location" required>
+                </label>
+                <label>UserPosted
+                    <input type="text" th:text="${postInfo.getIdUserPosted()}" required>
+                </label>
+                <label>UserPagePosted
+                    <input type="text" th:text="${postInfo.getIdUserPagePosted()}" required>
+                </label>
+                <button type="submit" class="button_post">Create post</button>
+            </form>
+        </div>-->
+
+        <div id="relationship-status" class="right">
+            <p>Some one status</p>
         </div>
-
-        <div>
-            <button id="canceled" class="request">Cancel request</button>
-        </div>
+        <!-- /.right -->
     </div>
-
-    <div class="center">
-        <!--/*@thymesVar id="user" type="com.findme.models.User"*/-->
-        <p th:text="${user.getFirstName()}"></p>
-        <p th:text="${user.getLastName()}"></p>
-        <p th:text="${user.getPhone()}"></p>
-        <p th:text="${user.getCountry()}"></p>
-        <p th:text="${user.getCity()}"></p>
-        <p th:text="${user.getAge()}"></p>
-        <p th:text="${user.getDateRegistered()}"></p>
-        <p th:text="${user.getDateLastActive()}"></p>
-        <p th:text="${user.getReligion()}"></p>
-        <p th:text="${user.getSchool()}"></p>
-        <p th:text="${user.getUniversity()}"></p>
-    </div>
-
-    <div class="down">
-        <!--@thymesVar id="postInfo" type="com.findme.models.PostInfo"-->
-        <form id="post-form">
-            <label>Message:
-                <input type="text" name="message" required>
-            </label>
-            <label>Location:
-                <input type="text" name="location" required>
-            </label>
-            <label>UserPosted
-                <input type="text" th:text="${postInfo.getIdUserPosted()}" required>
-            </label>
-            <label>UserPagePosted
-                <input type="text" th:text="${postInfo.getIdUserPagePosted()}" required>
-            </label>
-            <button type="submit" class="button_post">Create post</button>
-        </form>
-    </div>
-
-    <div id="relationship-status" class="right">
-        <p>Some one status</p>
-    </div>
-    <!-- /.right -->
-<!-- /.container -->
-<!---->
+    <!-- /.container -->
 <!--<div th:replace="fragments/footer :: footer" />-->
     <script>
-        $("#post-form").submit(function (e) {
+        /*$("#post-form").submit(function (e) {
             $.ajax({
                 type: "POST",
                 url: "/createPost",
@@ -141,19 +154,22 @@
                 }
             });
             e.preventDefault();
-        });
+        });*/
 
         $("#add-friends").click(function (e) {
-            var userIdFrom = "50";
-            var userIdTo = "90";
+            const idUserFrom = "1";
+            const idUserTo = "21";
+            debugger;
             $.ajax({
                 type: "POST",
                 url: "/add-friends",
-                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo,
+                data: "idUserFrom=" + idUserFrom + "&idUserTo=" + idUserTo,
                 success: function success() {
+                    debugger;
                     alert("Friend request has been sent successfully.");
                 },
                 error: function error(xhr, status, errorThrown) {
+                    debugger;
                     alert("Failed to exit with: " + status + "." + errorThrown);
                 }
             });
@@ -161,13 +177,14 @@
         });
 
         $("#delete").click(function (e) {
-            var userIdFrom = "50";
-            var userIdTo = "90";
-            var status = "DELETED";
+            const idUserFrom = "1";
+            const idUserTo = "21";
+            const status = "DELETED";
+            debugger;
             $.ajax({
                 type: "POST",
                 url: "/update-relationship",
-                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                data: "idUserFrom=" + idUserFrom + "&idUserTo=" + idUserTo + "&status=" + status,
                 success: function success() {
                     alert("Updated relationship success.");
                 },
@@ -179,13 +196,14 @@
         });
 
         $("#canceled").click(function (e) {
-            var userIdFrom = "50";
-            var userIdTo = "90";
-            var status = "CANCELED";
+            const idUserFrom = "1";
+            const idUserTo = "21";
+            const status = "CANCELED";
+            debugger;
             $.ajax({
                 type: "POST",
                 url: "/update-relationship",
-                data: "userIdFrom=" + userIdFrom + "&userIdTo=" + userIdTo + "&status=" + status,
+                data: "idUserFrom=" + idUserFrom + "&idUserTo=" + idUserTo + "&status=" + status,
                 success: function success() {
                     alert("Updated relationship success.");
                 },
