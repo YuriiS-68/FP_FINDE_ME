@@ -10,7 +10,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <springframework.version>5.1.4.RELEASE</springframework.version>
+        <springframework.version>5.2.20.RELEASE</springframework.version>
         <!--<failOnMissingWebXml>false</failOnMissingWebXml>-->
     </properties>
 
